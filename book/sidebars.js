@@ -6,7 +6,7 @@ module.exports = {
       items: [
         {
           type: 'doc',
-          id: 'Module-0-Introduction-to-Physical-AI/index',
+          id: 'Module-0-Introduction-to-Physical-AI/module-intro',
           label: 'Module Overview'
         },
         {
@@ -38,7 +38,7 @@ module.exports = {
       items: [
         {
           type: 'doc',
-          id: 'Module-1-The-Robotic-Nervous-System/index',
+          id: 'Module-1-The-Robotic-Nervous-System/module-1',
           label: 'Module Overview'
         },
         {
@@ -70,7 +70,7 @@ module.exports = {
       items: [
         {
           type: 'doc',
-          id: 'Module-2-The-Digital-Twin/index',
+          id: 'Module-2-The-Digital-Twin/module-2',
           label: 'Module Overview'
         },
         {
@@ -108,7 +108,7 @@ module.exports = {
       items: [
         {
           type: 'doc',
-          id: 'Module-3-The-AI-Robot-Brain/index',
+          id: 'Module-3-The-AI-Robot-Brain/module-3',
           label: 'Module Overview'
         },
         {
@@ -151,7 +151,7 @@ module.exports = {
       items: [
         {
           type: 'doc',
-          id: 'Module-4-Vision-Language-Action/index',
+          id: 'Module-4-Vision-Language-Action/module-4',
           label: 'Module Overview'
         },
         {
