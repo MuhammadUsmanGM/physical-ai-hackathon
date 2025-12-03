@@ -271,40 +271,76 @@ body {
   box-shadow: 0 0 30px rgba(0, 230, 118, 0.4);
 }
 
-/* Card Styling - Glassmorphism */
+/* Card Styling - Premium Green Glassmorphism */
 .card {
-  background: var(--glass-background);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
+  /* Green Glass Effect */
+  background: rgba(0, 230, 118, 0.08); /* Green tint */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  border-top: 1px solid rgba(0, 230, 118, 0.5);
+  border-left: 1px solid rgba(0, 230, 118, 0.5);
+  border-radius: 20px;
   padding: 2rem;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   height: 100%;
   position: relative;
   overflow: hidden;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 230, 118, 0.1),
+    inset 0 0 0 1px rgba(0, 230, 118, 0.05);
 }
 
+/* Screen Reflection / Shine Effect */
 .card::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: -100%;
+  width: 200%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  background: linear-gradient(
+    115deg, 
+    transparent 0%, 
+    transparent 40%, 
+    rgba(0, 230, 118, 0.2) 45%, 
+    rgba(0, 230, 118, 0.1) 50%, 
+    transparent 55%, 
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: 0.5s;
+  pointer-events: none;
 }
 
 .card:hover {
   transform: translateY(-10px) scale(1.02);
-  box-shadow: var(--card-shadow-hover);
+  box-shadow: 
+    0 20px 40px rgba(0, 230, 118, 0.25),
+    0 0 0 2px var(--ifm-color-primary);
   border-color: var(--ifm-color-primary);
+  background: rgba(0, 230, 118, 0.15);
 }
 
 .card:hover::before {
-  opacity: 1;
+  left: 100%;
+  transition: 0.7s;
+}
+
+/* Dark Mode Adjustments for Green Glass */
+[data-theme='dark'] .card {
+  background: rgba(0, 230, 118, 0.05); /* Subtle green in dark mode */
+  border: 1px solid rgba(0, 230, 118, 0.2);
+  border-top: 1px solid rgba(0, 230, 118, 0.3);
+  border-left: 1px solid rgba(0, 230, 118, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .card:hover {
+  background: rgba(0, 230, 118, 0.1);
+  box-shadow: 
+    0 20px 40px rgba(0, 230, 118, 0.2),
+    0 0 0 2px var(--ifm-color-primary);
 }
 
 .card h3 {
@@ -312,7 +348,9 @@ body {
   margin-bottom: 1rem;
   background: linear-gradient(135deg, var(--ifm-color-primary), var(--color-accent-cyan));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(0, 230, 118, 0.2));
 }
 
 /* Features Section */

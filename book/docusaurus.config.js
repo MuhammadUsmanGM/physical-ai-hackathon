@@ -111,7 +111,7 @@ const config = {
             items: [
               {
                 label: 'Physical AI Course',
-                to: '/docs/01-Introduction-to-Physical-AI/',
+                to: '/docs/module-01',
               },
             ],
           },
@@ -132,11 +132,7 @@ const config = {
             title: 'More',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
-              },
-              {
-                label: 'GitHub',
+                label: 'MuhammadUsmanGm',
                 href: 'https://github.com/MuhammadUsmanGM/physical-ai-hackathon',
               },
             ],

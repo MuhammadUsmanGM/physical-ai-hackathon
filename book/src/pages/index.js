@@ -64,37 +64,37 @@ export default function Home() {
             <h2 style={{fontSize: '2.5rem', marginBottom: '3rem'}}>🎓 Complete Course Modules</h2>
             
             <div className="module-grid">
-              <Link to="/docs/01-Introduction-to-Physical-AI/" className="card module-card">
+              <Link to="/docs/module-01" className="card module-card">
                 <div className="feature-icon" style={{fontSize: '2rem', width: '60px', height: '60px'}}>🔍</div>
                 <h3>Introduction to Physical AI</h3>
                 <p>Foundations of embodiment, sensors, and physical reasoning.</p>
               </Link>
 
-              <Link to="/docs/02-The-Robotic-Nervous-System/" className="card module-card">
+              <Link to="/docs/module-02" className="card module-card">
                 <div className="feature-icon" style={{fontSize: '2rem', width: '60px', height: '60px'}}>📡</div>
                 <h3>ROS 2 Fundamentals</h3>
                 <p>Master the robotic nervous system with nodes, topics, and services.</p>
               </Link>
 
-              <Link to="/docs/03-The-Digital-Twin/" className="card module-card">
+              <Link to="/docs/module-03" className="card module-card">
                 <div className="feature-icon" style={{fontSize: '2rem', width: '60px', height: '60px'}}>🎬</div>
                 <h3>Simulation (Gazebo & Unity)</h3>
                 <p>Create realistic digital twins and master sim-to-real transfer.</p>
               </Link>
 
-              <Link to="/docs/04-The-AI-Robot-Brain/" className="card module-card">
+              <Link to="/docs/module-04" className="card module-card">
                 <div className="feature-icon" style={{fontSize: '2rem', width: '60px', height: '60px'}}>🧠</div>
                 <h3>NVIDIA Isaac Platform</h3>
                 <p>Leverage Isaac Sim, Isaac ROS, and Jetson for edge AI.</p>
               </Link>
 
-              <Link to="/docs/05-Vision-Language-Action/" className="card module-card">
+              <Link to="/docs/module-05" className="card module-card">
                 <div className="feature-icon" style={{fontSize: '2rem', width: '60px', height: '60px'}}>💬</div>
                 <h3>Vision-Language-Action</h3>
                 <p>Build end-to-end VLA systems with LLMs and multi-modal AI.</p>
               </Link>
               
-              <Link to="/docs/05-Vision-Language-Action/02-Capstone-Project" className="card module-card" style={{borderColor: 'var(--color-accent-purple)'}}>
+              <Link to="/docs/module-05" className="card module-card" style={{borderColor: 'var(--color-accent-purple)'}}>
                 <div className="feature-icon" style={{fontSize: '2rem', width: '60px', height: '60px', background: 'rgba(213, 0, 249, 0.1)', color: 'var(--color-accent-purple)'}}>🏆</div>
                 <h3 style={{color: 'var(--color-accent-purple)'}}>Capstone Project</h3>
                 <p>Build a complete autonomous humanoid assistant.</p>
