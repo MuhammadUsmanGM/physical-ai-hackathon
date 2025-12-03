@@ -10,9 +10,9 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
-  favicon: 'img/favicon.ico',
+  title: 'Physical AI & Humanoid Robotics',
+  tagline: 'Bridging Digital Intelligence with Physical Embodiment - Master the Future of AI Agents',
+  favicon: 'img/logo.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -51,6 +51,7 @@ const config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          routeBasePath: '/docs' // Serve the docs at /docs route
         },
         blog: {
           showReadingTime: true,
@@ -83,21 +84,21 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'My Site',
+        title: 'Physical AI',
         logo: {
-          alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          alt: 'Physical AI Logo',
+          src: 'img/logo.png',
         },
         items: [
           {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Course Content',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://github.com/MuhammadUsmanGM/physical-ai-hackathon',
             label: 'GitHub',
             position: 'right',
           },
@@ -107,11 +108,11 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: 'Course',
             items: [
               {
                 label: 'Physical AI Course',
-                to: '/docs/Module-0-Introduction-to-Physical-AI/',
+                to: '/docs/01-Introduction-to-Physical-AI/',
               },
             ],
           },
@@ -119,16 +120,12 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+                label: 'GitHub Repository',
+                href: 'https://github.com/MuhammadUsmanGM/physical-ai-hackathon',
               },
               {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'X',
-                href: 'https://x.com/docusaurus',
+                label: 'Issues',
+                href: 'https://github.com/MuhammadUsmanGM/physical-ai-hackathon/issues',
               },
             ],
           },
@@ -141,12 +138,12 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/MuhammadUsmanGM/physical-ai-hackathon',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Physical AI & Humanoid Robotics Course. Built with Docusaurus.`,
       },
       prism: {
         theme: prismThemes.github,

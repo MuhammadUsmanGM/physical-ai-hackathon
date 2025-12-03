@@ -1,30 +1,128 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Custom CSS for Physical AI & Humanoid Robotics Course
  */
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #2563eb; /* Blue */
+  --ifm-color-primary-dark: #1d4ed8;
+  --ifm-color-primary-darker: #1e40af;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #3b82f6;
+  --ifm-color-primary-lighter: #60a5fa;
+  --ifm-color-primary-lightest: #93c5fd;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(37, 99, 235, 0.1);
+  
+  /* Additional brand colors */
+  --brand-ai: #8b5cf6; /* Purple for AI */
+  --brand-robotics: #ec4899; /* Pink for Robotics */
+  --brand-physical: #10b981; /* Green for Physical */
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* Dark theme */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #3b82f6;
+  --ifm-color-primary-dark: #2563eb;
+  --ifm-color-primary-darker: #1d4ed8;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #60a5fa;
+  --ifm-color-primary-lighter: #93c5fd;
+  --ifm-color-primary-lightest: #bfdbfe;
+  --docusaurus-highlighted-code-line-bg: rgba(59, 130, 246, 0.3);
+}
+
+/* Custom typography */
+.hero__title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--brand-ai), var(--brand-physical));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__subtitle {
+  font-size: 1.5rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* Button styling */
+.button--secondary {
+  background: linear-gradient(135deg, var(--brand-ai), var(--brand-robotics));
+  border: none;
+}
+
+.button--secondary:hover {
+  background: linear-gradient(135deg, var(--brand-robotics), var(--brand-physical));
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Feature section styling */
+.featuresSection {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+}
+
+[data-theme='dark'] .featuresSection {
+  background: linear-gradient(135deg, #0c4a6e, #075985);
+}
+
+.courseOverview {
+  background: #ffffff;
+}
+
+[data-theme='dark'] .courseOverview {
+  background: #0f172a;
+}
+
+/* Module buttons */
+.button--outline {
+  transition: all 0.3s ease;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+}
+
+.button--outline:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 996px) {
+  .hero__title {
+    font-size: 2.5rem;
+  }
+  
+  .hero__subtitle {
+    font-size: 1.25rem;
+  }
+}
+
+/* Navbar styling */
+.navbar {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+/* Footer styling */
+.footer {
+  background-color: #0f172a;
+}
+
+/* Code blocks */
+.codeBlockContainer {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Links */
+.menu__link,
+.table-of-contents__link {
+  transition: color 0.2s ease;
+}
+
+.table-of-contents__link:hover,
+.table-of-contents__link:focus {
+  color: var(--ifm-color-primary);
 }
