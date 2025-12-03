@@ -1,292 +1,487 @@
 /**
  * Custom CSS for Physical AI & Humanoid Robotics Course
- * Theme: White/Glowing Light Green (light mode) and Dark/Glowing Light Green (dark mode)
+ * Theme: Premium Futuristic / High-Tech Academy
  */
 
-/* Light theme variables */
+/* Import modern font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
 :root {
-  --ifm-color-primary: #00cc66; /* Vibrant glowing light green */
-  --ifm-color-primary-dark: #00aa55;
-  --ifm-color-primary-darker: #008844;
-  --ifm-color-primary-darkest: #006633;
-  --ifm-color-primary-light: #33dd88;
-  --ifm-color-primary-lighter: #66eeaa;
-  --ifm-color-primary-lightest: #99ffcc;
-  --ifm-color-white: #ffffff;
-  --ifm-color-gray: #f9fafb;
-  --ifm-color-dark: #111827;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 204, 102, 0.1);
+  /* Core Brand Colors */
+  --ifm-color-primary: #00e676; /* Neon Green */
+  --ifm-color-primary-dark: #00c853;
+  --ifm-color-primary-darker: #00a844;
+  --ifm-color-primary-darkest: #00702e;
+  --ifm-color-primary-light: #69f0ae;
+  --ifm-color-primary-lighter: #b9f6ca;
+  --ifm-color-primary-lightest: #e0f2f1;
+
+  /* Accent Colors */
+  --color-accent-blue: #2979ff;
+  --color-accent-purple: #d500f9;
+  --color-accent-cyan: #00e5ff;
+
+  /* Backgrounds */
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f8f9fa;
+  --glass-background: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  
+  /* Typography */
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', monospace;
+  --ifm-heading-font-weight: 700;
+
+  /* Shadows & Glows */
+  --glow-primary: 0 0 20px rgba(0, 230, 118, 0.3);
+  --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 20px 40px -10px rgba(0, 230, 118, 0.2);
 }
 
-/* Dark theme variables */
 [data-theme='dark'] {
-  --ifm-color-primary: #33dd88; /* Brighter glowing green for dark mode */
-  --ifm-color-primary-dark: #00cc66;
-  --ifm-color-primary-darker: #00aa55;
-  --ifm-color-primary-darkest: #008844;
-  --ifm-color-primary-light: #66eeaa;
-  --ifm-color-primary-lighter: #99ffcc;
-  --ifm-color-primary-lightest: #ccffdd;
-  --ifm-color-white: #1f2937; /* Dark mode background */
-  --ifm-color-gray: #374151;
-  --ifm-color-dark: #f3f4f6; /* Text color in dark mode */
-  --docusaurus-highlighted-code-line-bg: rgba(51, 221, 136, 0.2);
+  --ifm-color-primary: #00e676;
+  --ifm-color-primary-dark: #00c853;
+  --ifm-color-primary-darker: #00a844;
+  --ifm-color-primary-darkest: #00702e;
+  --ifm-color-primary-light: #69f0ae;
+  --ifm-color-primary-lighter: #b9f6ca;
+  --ifm-color-primary-lightest: #e0f2f1;
+
+  --ifm-background-color: #0a0b10; /* Deep space black */
+  --ifm-background-surface-color: #12141c;
+  --glass-background: rgba(18, 20, 28, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  
+  --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --card-shadow-hover: 0 0 30px rgba(0, 230, 118, 0.15);
 }
 
-/* General body styling */
+/* Global Reset & Base Styles */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background-color: var(--ifm-color-white);
-  color: var(--ifm-color-dark);
+  background-color: var(--ifm-background-color);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(0, 230, 118, 0.03) 0%, transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(41, 121, 255, 0.03) 0%, transparent 25%);
+  background-attachment: fixed;
 }
 
-[data-theme='dark'] body {
-  background-color: var(--ifm-color-white);
-  color: var(--ifm-color-dark);
+/* Navbar Styling */
+.navbar {
+  background: var(--glass-background);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: none;
 }
 
-/* Hero banner styling */
-.heroBanner {
-  padding: 6rem 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--ifm-color-white) 0%, #eefff3 100%);
-  color: var(--ifm-color-dark);
-  box-shadow: 0 10px 15px -3px rgba(0, 204, 102, 0.1);
-}
-
-[data-theme='dark'] .heroBanner {
-  background: linear-gradient(135deg, var(--ifm-color-white) 0%, #003d1f 100%);
-  color: var(--ifm-color-dark);
-  box-shadow: 0 10px 15px -3px rgba(51, 221, 136, 0.2);
-}
-
-/* Typography */
-.hero__title {
-  font-size: 4rem;
+.navbar__title {
   font-weight: 800;
-  background: linear-gradient(to right, var(--ifm-color-primary), #00aa55);
+  background: linear-gradient(135deg, var(--ifm-color-primary), var(--color-accent-cyan));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
-  text-shadow: 0 0 10px rgba(0, 204, 102, 0.3);
 }
 
-[data-theme='dark'] .hero__title {
-  text-shadow: 0 0 15px rgba(51, 221, 136, 0.4);
+/* Hero Section - Cyberpunk/Futuristic Style */
+.heroBanner {
+  padding: 10rem 0 8rem;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dynamic Cyber Grid Background */
+.heroBanner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: 
+    linear-gradient(rgba(0, 230, 118, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 230, 118, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  transform: perspective(500px) rotateX(60deg);
+  animation: moveGrid 20s linear infinite;
+  z-index: -2;
+}
+
+/* Glowing Orb Background */
+.heroBanner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 230, 118, 0.15) 0%, rgba(41, 121, 255, 0.05) 50%, transparent 70%);
+  filter: blur(60px);
+  z-index: -1;
+  animation: pulseOrb 8s ease-in-out infinite;
+}
+
+@keyframes moveGrid {
+  0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+  100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+}
+
+@keyframes pulseOrb {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
+}
+
+/* Hero Title - Fixed for Light Mode */
+.hero__title {
+  font-size: 5rem;
+  line-height: 1.1;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  /* Default (Dark Mode) Gradient */
+  background: linear-gradient(to right, #ffffff 20%, var(--ifm-color-primary-light) 40%, var(--ifm-color-primary) 60%, #ffffff 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shineText 5s linear infinite;
+  /* Removed text-shadow to fix blurriness on transparent text */
+  filter: drop-shadow(0 0 15px rgba(0, 230, 118, 0.3));
+  letter-spacing: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme='light'] .hero__title {
+  /* Light Mode Gradient - Using Dark Greens/Blacks for visibility */
+  background: linear-gradient(to right, #1a1a1a 20%, var(--ifm-color-primary-dark) 40%, var(--ifm-color-primary-darker) 60%, #1a1a1a 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shineText 5s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(0, 200, 83, 0.2));
+}
+
+@keyframes shineText {
+  to { background-position: 200% center; }
 }
 
 .hero__subtitle {
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: var(--ifm-color-dark);
-  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  opacity: 0.9;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  font-weight: 500;
+  color: var(--ifm-color-primary-lightest);
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  position: relative;
+  z-index: 1;
 }
 
-[data-theme='dark'] .hero__subtitle {
+[data-theme='light'] .hero__subtitle {
   color: var(--ifm-color-dark);
-}
-
-/* Buttons */
-.button--secondary {
-  background: var(--ifm-color-primary);
-  border: none;
-  color: white;
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
   font-weight: 600;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 204, 102, 0.2);
 }
 
-.button--secondary:hover {
-  background: var(--ifm-color-primary-darker);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 204, 102, 0.4);
+/* Advanced Button Styling with Moving Border */
+.button {
+  border-radius: 50px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.button--primary {
+  background: var(--ifm-color-primary-darkest);
+  color: white;
+  border: none;
+  padding: 1.2rem 3rem;
+  font-size: 1.2rem;
+  box-shadow: 0 0 20px rgba(0, 230, 118, 0.2);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Moving Gradient Border Effect - GREEN THEME */
+.button--primary::before {
+  content: '';
+  position: absolute;
+  top: -4px; right: -4px; bottom: -4px; left: -4px;
+  /* Green-themed gradient as requested */
+  background: linear-gradient(90deg, 
+    var(--ifm-color-primary), 
+    #b9f6ca, 
+    var(--ifm-color-primary-dark), 
+    var(--ifm-color-primary));
+  background-size: 300% 300%;
+  z-index: -1;
+  border-radius: 54px;
+  animation: borderAnimate 3s linear infinite;
+}
+
+/* Inner glow on hover */
+.button--primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at center, rgba(0, 230, 118, 0.4) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+@keyframes borderAnimate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.button--primary:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 0 50px rgba(0, 230, 118, 0.6);
+  color: white;
+  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+.button--primary:hover::after {
+  opacity: 1;
 }
 
 .button--outline {
-  background: transparent;
-  border: 2px solid var(--ifm-color-primary);
-  color: var(--ifm-color-primary);
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 204, 102, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
 }
 
 .button--outline:hover {
   background: var(--ifm-color-primary);
-  color: white;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 204, 102, 0.3);
+  border-color: var(--ifm-color-primary);
+  color: black;
+  box-shadow: 0 0 30px rgba(0, 230, 118, 0.4);
 }
 
-/* Feature section styling */
-.featuresSection {
-  padding: 4rem 0;
-  background-color: var(--ifm-color-white);
-  color: var(--ifm-color-dark);
-}
-
-[data-theme='dark'] .featuresSection {
-  background-color: var(--ifm-color-white);
-  color: var(--ifm-color-dark);
-}
-
-.featuresSection h2 {
-  text-align: center;
-  margin-bottom: 3rem;
-  color: var(--ifm-color-primary);
-  text-shadow: 0 0 8px rgba(0, 204, 102, 0.2);
-}
-
-/* Course overview section */
-.courseOverview {
-  padding: 4rem 0;
-  background: linear-gradient(135deg, #eefff3 0%, #f0fdf4 100%);
-}
-
-[data-theme='dark'] .courseOverview {
-  background: linear-gradient(135deg, #002d19 0%, #003d1f 100%);
-}
-
-.courseOverview h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: var(--ifm-color-primary);
-  text-shadow: 0 0 8px rgba(0, 204, 102, 0.2);
-}
-
-.courseOverview p {
-  text-align: center;
-  margin-bottom: 3rem;
-  color: var(--ifm-color-dark);
-}
-
-[data-theme='dark'] .courseOverview p {
-  color: var(--ifm-color-dark);
-}
-
-/* Grid styling */
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0 -0.75rem;
-}
-
-.col {
-  flex: 1;
-  padding: 0 0.75rem;
-  min-width: 280px;
-  margin-bottom: 1.5rem;
-}
-
-/* Button styling for modules */
-.button--primary.button--outline {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-
-/* Responsive adjustments */
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 4rem 0;
-  }
-  
-  .hero__title {
-    font-size: 2.5rem;
-  }
-  
-  .hero__subtitle {
-    font-size: 1.25rem;
-  }
-  
-  .buttons {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .col {
-    flex: 0 0 100%;
-  }
-}
-
-/* Navbar styling */
-.navbar {
-  background-color: var(--ifm-color-white);
-  box-shadow: 0 4px 6px -1px rgba(0, 204, 102, 0.1);
-}
-
-[data-theme='dark'] .navbar {
-  background-color: var(--ifm-color-white);
-  box-shadow: 0 4px 6px -1px rgba(51, 221, 136, 0.2);
-}
-
-/* Footer styling */
-.footer {
-  background-color: var(--ifm-color-white);
-}
-
-[data-theme='dark'] .footer {
-  background-color: var(--ifm-color-white);
-}
-
-/* Cards and boxes */
+/* Card Styling - Glassmorphism */
 .card {
-  background-color: var(--ifm-color-white);
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 204, 102, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid rgba(0, 204, 102, 0.1);
+  background: var(--glass-background);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px rgba(0, 204, 102, 0.15);
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--ifm-color-primary);
 }
 
-[data-theme='dark'] .card {
-  background-color: var(--ifm-color-gray);
-  box-shadow: 0 4px 6px rgba(51, 221, 136, 0.1);
-  border: 1px solid rgba(51, 221, 136, 0.2);
+.card:hover::before {
+  opacity: 1;
 }
 
-[data-theme='dark'] .card:hover {
-  box-shadow: 0 10px 15px rgba(51, 221, 136, 0.2);
+.card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--ifm-color-primary), var(--color-accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Glow effect for important elements */
-.glow-element {
+/* Features Section */
+.featuresSection {
+  padding: 6rem 0;
   position: relative;
 }
 
-.glow-element::after {
-  content: '';
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
-  border-radius: 1rem;
-  background: linear-gradient(45deg, var(--ifm-color-primary), #33dd88, var(--ifm-color-primary));
-  z-index: -1;
-  filter: blur(15px);
-  opacity: 0.6;
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  background: rgba(0, 230, 118, 0.1);
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  transition: all 0.3s ease;
 }
 
-/* Improved gradient effects */
-.gradient-bg {
-  background: linear-gradient(135deg, var(--ifm-color-white), #eefff3);
+.card:hover .feature-icon {
+  background: var(--ifm-color-primary);
+  color: white;
+  transform: rotate(5deg);
 }
 
-[data-theme='dark'] .gradient-bg {
-  background: linear-gradient(135deg, var(--ifm-color-white), #002d19);
+/* Course Modules Grid */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.module-card {
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none !important;
+}
+
+.module-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Footer - Dull Dark in Both Themes */
+.footer {
+  background-color: #0f1115 !important; /* Force dark background */
+  color: #8b949e !important; /* Dull gray text */
+  border-top: 1px solid #21262d;
+}
+
+.footer .footer__title {
+  color: #c9d1d9;
+}
+
+.footer .footer__link-item {
+  color: #8b949e;
+}
+
+.footer .footer__link-item:hover {
+  color: var(--ifm-color-primary);
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+.delay-1 { animation-delay: 1s; }
+.delay-2 { animation-delay: 2s; }
+
+/* Markdown Content Styling */
+.markdown h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, var(--ifm-color-primary), var(--color-accent-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+}
+
+.markdown code {
+  background: rgba(0, 230, 118, 0.1);
+  border: 1px solid rgba(0, 230, 118, 0.2);
+  color: var(--ifm-color-primary-dark);
+}
+
+[data-theme='dark'] .markdown code {
+  color: var(--ifm-color-primary-light);
+}
+
+.markdown pre {
+  background: #12141c;
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Admonitions (Alerts) */
+.alert {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.alert--info {
+  background-color: rgba(41, 121, 255, 0.1);
+  border-left: 4px solid var(--color-accent-blue);
+}
+
+.alert--success {
+  background-color: rgba(0, 230, 118, 0.1);
+  border-left: 4px solid var(--ifm-color-primary);
+}
+
+.alert--warning {
+  background-color: rgba(255, 171, 0, 0.1);
+  border-left: 4px solid #ffab00;
+}
+
+
+/* Custom Animated Scrollbar */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ifm-background-surface-color);
+  border-left: 1px solid rgba(0, 230, 118, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    45deg, 
+    var(--ifm-color-primary-light), 
+    var(--ifm-color-primary),
+    var(--ifm-color-primary-dark)
+  );
+  background-size: 200% 200%;
+  border-radius: 7px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+  transition: all 0.3s ease;
+}
+
+/* Scrollbar Hover Animation Effect */
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ifm-color-primary);
+  border: 2px solid transparent;
+  background: linear-gradient(
+    45deg, 
+    var(--ifm-color-primary-lighter), 
+    var(--ifm-color-primary),
+    var(--ifm-color-primary-darker)
+  );
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ifm-color-primary) var(--ifm-background-surface-color);
 }

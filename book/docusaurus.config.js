@@ -96,7 +96,6 @@ const config = {
             position: 'left',
             label: 'Course Content',
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
           {
             href: 'https://github.com/MuhammadUsmanGM/physical-ai-hackathon',
             label: 'GitHub',
