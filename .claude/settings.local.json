@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "SlashCommand(/sp.phr --title \"User greeting\" --stage \"general\")",
+      "Bash(.specify/scripts/bash/create-phr.sh:*)",
+      "SlashCommand(/sp.phr --title \"Create core chapters in /book\" --stage \"general\")",
+      "SlashCommand(/sp.specify)",
+      "Bash(git fetch:*)",
+      "Bash(powershell.exe:*)",
+      "SlashCommand(/sp.phr --title \"Add these docs to the sidebar and outline content\" --stage \"spec\" --feature \"book-chapters-outline\")",
+      "SlashCommand(/sp.phr --title \"Add frontmatter + ids to each doc and update sidebars.js\" --stage \"spec\" --feature \"book-chapters-outline\")",
+      "Bash(python:*)",
+      "Bash(.venv\\Scripts\\activate:*)",
+      "SlashCommand(/sp.phr --title \"Create virtualenv and FastAPI RAG app\" --stage \"green\" --feature \"backend-rag-app\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
