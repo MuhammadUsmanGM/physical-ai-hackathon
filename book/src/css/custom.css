@@ -1,96 +1,204 @@
 /**
  * Custom CSS for Physical AI & Humanoid Robotics Course
+ * Theme: White/Glowing Light Green (light mode) and Dark/Glowing Light Green (dark mode)
  */
 
-/* You can override the default Infima variables here. */
+/* Light theme variables */
 :root {
-  --ifm-color-primary: #2563eb; /* Blue */
-  --ifm-color-primary-dark: #1d4ed8;
-  --ifm-color-primary-darker: #1e40af;
-  --ifm-color-primary-darkest: #1e3a8a;
-  --ifm-color-primary-light: #3b82f6;
-  --ifm-color-primary-lighter: #60a5fa;
-  --ifm-color-primary-lightest: #93c5fd;
+  --ifm-color-primary: #00cc66; /* Vibrant glowing light green */
+  --ifm-color-primary-dark: #00aa55;
+  --ifm-color-primary-darker: #008844;
+  --ifm-color-primary-darkest: #006633;
+  --ifm-color-primary-light: #33dd88;
+  --ifm-color-primary-lighter: #66eeaa;
+  --ifm-color-primary-lightest: #99ffcc;
+  --ifm-color-white: #ffffff;
+  --ifm-color-gray: #f9fafb;
+  --ifm-color-dark: #111827;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(37, 99, 235, 0.1);
-  
-  /* Additional brand colors */
-  --brand-ai: #8b5cf6; /* Purple for AI */
-  --brand-robotics: #ec4899; /* Pink for Robotics */
-  --brand-physical: #10b981; /* Green for Physical */
+  --docusaurus-highlighted-code-line-bg: rgba(0, 204, 102, 0.1);
 }
 
-/* Dark theme */
+/* Dark theme variables */
 [data-theme='dark'] {
-  --ifm-color-primary: #3b82f6;
-  --ifm-color-primary-dark: #2563eb;
-  --ifm-color-primary-darker: #1d4ed8;
-  --ifm-color-primary-darkest: #1e3a8a;
-  --ifm-color-primary-light: #60a5fa;
-  --ifm-color-primary-lighter: #93c5fd;
-  --ifm-color-primary-lightest: #bfdbfe;
-  --docusaurus-highlighted-code-line-bg: rgba(59, 130, 246, 0.3);
+  --ifm-color-primary: #33dd88; /* Brighter glowing green for dark mode */
+  --ifm-color-primary-dark: #00cc66;
+  --ifm-color-primary-darker: #00aa55;
+  --ifm-color-primary-darkest: #008844;
+  --ifm-color-primary-light: #66eeaa;
+  --ifm-color-primary-lighter: #99ffcc;
+  --ifm-color-primary-lightest: #ccffdd;
+  --ifm-color-white: #1f2937; /* Dark mode background */
+  --ifm-color-gray: #374151;
+  --ifm-color-dark: #f3f4f6; /* Text color in dark mode */
+  --docusaurus-highlighted-code-line-bg: rgba(51, 221, 136, 0.2);
 }
 
-/* Custom typography */
+/* General body styling */
+body {
+  background-color: var(--ifm-color-white);
+  color: var(--ifm-color-dark);
+}
+
+[data-theme='dark'] body {
+  background-color: var(--ifm-color-white);
+  color: var(--ifm-color-dark);
+}
+
+/* Hero banner styling */
+.heroBanner {
+  padding: 6rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--ifm-color-white) 0%, #eefff3 100%);
+  color: var(--ifm-color-dark);
+  box-shadow: 0 10px 15px -3px rgba(0, 204, 102, 0.1);
+}
+
+[data-theme='dark'] .heroBanner {
+  background: linear-gradient(135deg, var(--ifm-color-white) 0%, #003d1f 100%);
+  color: var(--ifm-color-dark);
+  box-shadow: 0 10px 15px -3px rgba(51, 221, 136, 0.2);
+}
+
+/* Typography */
 .hero__title {
-  font-size: 3.5rem;
+  font-size: 4rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--brand-ai), var(--brand-physical));
+  background: linear-gradient(to right, var(--ifm-color-primary), #00aa55);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 10px rgba(0, 204, 102, 0.3);
+}
+
+[data-theme='dark'] .hero__title {
+  text-shadow: 0 0 15px rgba(51, 221, 136, 0.4);
 }
 
 .hero__subtitle {
   font-size: 1.5rem;
   font-weight: 400;
-  opacity: 0.9;
+  color: var(--ifm-color-dark);
+  margin-bottom: 2rem;
 }
 
-/* Button styling */
+[data-theme='dark'] .hero__subtitle {
+  color: var(--ifm-color-dark);
+}
+
+/* Buttons */
 .button--secondary {
-  background: linear-gradient(135deg, var(--brand-ai), var(--brand-robotics));
+  background: var(--ifm-color-primary);
   border: none;
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 204, 102, 0.2);
 }
 
 .button--secondary:hover {
-  background: linear-gradient(135deg, var(--brand-robotics), var(--brand-physical));
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  background: var(--ifm-color-primary-darker);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 204, 102, 0.4);
+}
+
+.button--outline {
+  background: transparent;
+  border: 2px solid var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 204, 102, 0.1);
+}
+
+.button--outline:hover {
+  background: var(--ifm-color-primary);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 204, 102, 0.3);
 }
 
 /* Feature section styling */
 .featuresSection {
-  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  padding: 4rem 0;
+  background-color: var(--ifm-color-white);
+  color: var(--ifm-color-dark);
 }
 
 [data-theme='dark'] .featuresSection {
-  background: linear-gradient(135deg, #0c4a6e, #075985);
+  background-color: var(--ifm-color-white);
+  color: var(--ifm-color-dark);
 }
 
+.featuresSection h2 {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: var(--ifm-color-primary);
+  text-shadow: 0 0 8px rgba(0, 204, 102, 0.2);
+}
+
+/* Course overview section */
 .courseOverview {
-  background: #ffffff;
+  padding: 4rem 0;
+  background: linear-gradient(135deg, #eefff3 0%, #f0fdf4 100%);
 }
 
 [data-theme='dark'] .courseOverview {
-  background: #0f172a;
+  background: linear-gradient(135deg, #002d19 0%, #003d1f 100%);
 }
 
-/* Module buttons */
-.button--outline {
-  transition: all 0.3s ease;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
+.courseOverview h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--ifm-color-primary);
+  text-shadow: 0 0 8px rgba(0, 204, 102, 0.2);
 }
 
-.button--outline:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+.courseOverview p {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: var(--ifm-color-dark);
+}
+
+[data-theme='dark'] .courseOverview p {
+  color: var(--ifm-color-dark);
+}
+
+/* Grid styling */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -0.75rem;
+}
+
+.col {
+  flex: 1;
+  padding: 0 0.75rem;
+  min-width: 280px;
+  margin-bottom: 1.5rem;
+}
+
+/* Button styling for modules */
+.button--primary.button--outline {
+  display: block;
+  width: 100%;
+  text-align: center;
 }
 
 /* Responsive adjustments */
 @media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 4rem 0;
+  }
+  
   .hero__title {
     font-size: 2.5rem;
   }
@@ -98,31 +206,87 @@
   .hero__subtitle {
     font-size: 1.25rem;
   }
+  
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .col {
+    flex: 0 0 100%;
+  }
 }
 
 /* Navbar styling */
 .navbar {
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  background-color: var(--ifm-color-white);
+  box-shadow: 0 4px 6px -1px rgba(0, 204, 102, 0.1);
+}
+
+[data-theme='dark'] .navbar {
+  background-color: var(--ifm-color-white);
+  box-shadow: 0 4px 6px -1px rgba(51, 221, 136, 0.2);
 }
 
 /* Footer styling */
 .footer {
-  background-color: #0f172a;
+  background-color: var(--ifm-color-white);
 }
 
-/* Code blocks */
-.codeBlockContainer {
+[data-theme='dark'] .footer {
+  background-color: var(--ifm-color-white);
+}
+
+/* Cards and boxes */
+.card {
+  background-color: var(--ifm-color-white);
   border-radius: 0.5rem;
-  overflow: hidden;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 204, 102, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 204, 102, 0.1);
 }
 
-/* Links */
-.menu__link,
-.table-of-contents__link {
-  transition: color 0.2s ease;
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 204, 102, 0.15);
 }
 
-.table-of-contents__link:hover,
-.table-of-contents__link:focus {
-  color: var(--ifm-color-primary);
+[data-theme='dark'] .card {
+  background-color: var(--ifm-color-gray);
+  box-shadow: 0 4px 6px rgba(51, 221, 136, 0.1);
+  border: 1px solid rgba(51, 221, 136, 0.2);
+}
+
+[data-theme='dark'] .card:hover {
+  box-shadow: 0 10px 15px rgba(51, 221, 136, 0.2);
+}
+
+/* Glow effect for important elements */
+.glow-element {
+  position: relative;
+}
+
+.glow-element::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 1rem;
+  background: linear-gradient(45deg, var(--ifm-color-primary), #33dd88, var(--ifm-color-primary));
+  z-index: -1;
+  filter: blur(15px);
+  opacity: 0.6;
+}
+
+/* Improved gradient effects */
+.gradient-bg {
+  background: linear-gradient(135deg, var(--ifm-color-white), #eefff3);
+}
+
+[data-theme='dark'] .gradient-bg {
+  background: linear-gradient(135deg, var(--ifm-color-white), #002d19);
 }

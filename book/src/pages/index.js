@@ -16,7 +16,7 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           <Link
-            className="button button--secondary button--lg"
+            className="button button--secondary button--lg glow-element"
             to="/docs/01-Introduction-to-Physical-AI/">
             Start Your Journey Now 🚀
           </Link>
@@ -38,57 +38,66 @@ export default function Home() {
           <div className="container">
             <div className="row">
               <div className="col col--4">
-                <div className="text--center padding-horiz--md">
-                  <h2>Learn Physical AI</h2>
-                  <p>Explore the fundamentals of AI systems in the physical world and embodied intelligence.</p>
+                <div className="text--center padding-horiz--md glow-element">
+                  <h2>🤖 Explore Physical AI</h2>
+                  <p>Dive deep into the revolutionary field of embodied intelligence, where digital minds meet the physical world.</p>
+                  <div className="card shadow--tl">
+                    <p>Understand how AI systems function in real environments with real physics</p>
+                  </div>
                 </div>
               </div>
               <div className="col col--4">
-                <div className="text--center padding-horiz--md">
-                  <h2>Master Robotics</h2>
-                  <p>Gain hands-on experience with ROS 2, Gazebo, Unity, and NVIDIA Isaac platforms.</p>
+                <div className="text--center padding-horiz--md glow-element">
+                  <h2>🔧 Master Robotics</h2>
+                  <p>Experience hands-on learning with industry-standard platforms like ROS 2, Gazebo, Unity, and NVIDIA Isaac.</p>
+                  <div className="card shadow--tl">
+                    <p>Build real robots using cutting-edge tools and methodologies</p>
+                  </div>
                 </div>
               </div>
               <div className="col col--4">
-                <div className="text--center padding-horiz--md">
-                  <h2>Build Intelligent Systems</h2>
-                  <p>Create autonomous humanoid systems capable of natural human interaction.</p>
+                <div className="text--center padding-horiz--md glow-element">
+                  <h2>🚀 Build Intelligent Systems</h2>
+                  <p>Design and implement autonomous humanoid robots that interact naturally with humans and environments.</p>
+                  <div className="card shadow--tl">
+                    <p>Transform concepts into functional, intelligent, embodied systems</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
         
-        <section className={styles.courseOverview}>
+        <section className={`${styles.courseOverview} gradient-bg`}>
           <div className="container padding-vert--xl text--center">
-            <h2>Course Modules</h2>
-            <p>Follow the structured course modules to master Physical AI and Humanoid Robotics:</p>
+            <h2>🎓 Complete Course Modules</h2>
+            <p>Follow our comprehensive learning path to master Physical AI and Humanoid Robotics:</p>
             <div className="row">
               <div className="col">
-                <Link to="/docs/01-Introduction-to-Physical-AI/" className="button button--primary button--outline">
-                  Introduction to Physical AI
+                <Link to="/docs/01-Introduction-to-Physical-AI/" className="button button--primary button--outline glow-element">
+                  <span>🔍</span> Introduction to Physical AI
                 </Link>
               </div>
               <div className="col">
-                <Link to="/docs/02-The-Robotic-Nervous-System/" className="button button--primary button--outline">
-                  ROS 2 Fundamentals
+                <Link to="/docs/02-The-Robotic-Nervous-System/" className="button button--primary button--outline glow-element">
+                  <span>📡</span> ROS 2 Fundamentals
                 </Link>
               </div>
               <div className="col">
-                <Link to="/docs/03-The-Digital-Twin/" className="button button--primary button--outline">
-                  Simulation (Gazebo & Unity)
+                <Link to="/docs/03-The-Digital-Twin/" className="button button--primary button--outline glow-element">
+                  <span>🎬</span> Simulation (Gazebo & Unity)
                 </Link>
               </div>
             </div>
             <div className="row margin-top--lg">
               <div className="col">
-                <Link to="/docs/04-The-AI-Robot-Brain/" className="button button--primary button--outline">
-                  NVIDIA Isaac Platform
+                <Link to="/docs/04-The-AI-Robot-Brain/" className="button button--primary button--outline glow-element">
+                  <span>🧠</span> NVIDIA Isaac Platform
                 </Link>
               </div>
               <div className="col">
-                <Link to="/docs/05-Vision-Language-Action/" className="button button--primary button--outline">
-                  Vision-Language-Action
+                <Link to="/docs/05-Vision-Language-Action/" className="button button--primary button--outline glow-element">
+                  <span>💬</span> Vision-Language-Action
                 </Link>
               </div>
             </div>
