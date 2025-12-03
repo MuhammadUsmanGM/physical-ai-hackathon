@@ -111,7 +111,7 @@ const config = {
             items: [
               {
                 label: 'Physical AI Course',
-                to: '/docs',
+                to: '/docs/Module-0-Introduction-to-Physical-AI/module-intro',
               },
             ],
           },

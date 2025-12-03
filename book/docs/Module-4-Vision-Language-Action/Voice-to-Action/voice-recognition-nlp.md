@@ -6,114 +6,172 @@ sidebar_label: Voice Recognition and NLP
 
 # Voice Recognition and Natural Language Processing
 
-## Natural Language Processing for Robotics
+To make a robot truly interactive, it needs to hear and understand. In this chapter, we build a **Voice Command Stack** using OpenAI Whisper (Ears) and GPT-4 (Brain).
 
-Natural language processing (NLP) in robotics involves converting human speech commands into actionable robot behaviors. This technology enables more intuitive human-robot interaction by allowing users to communicate with robots using natural language.
+## The Voice Pipeline
 
-### Speech Recognition Implementation
+```mermaid
+graph LR
+    A[Microphone] -->|Audio Stream| B[Wake Word Engine]
+    B -->|Detect 'Hey Robot'| C[Speech-to-Text (Whisper)]
+    C -->|Transcribed Text| D[LLM (GPT-4)]
+    D -->|JSON Command| E[ROS 2 Node]
+```
 
-Modern speech recognition systems for robotics typically use deep learning models that can operate in noisy environments and understand domain-specific commands:
+## 1. Wake Word Detection
 
-**OpenAI Whisper Integration**:
-- Real-time speech-to-text conversion
-- Multi-language support
-- Robustness to background noise
-- Custom vocabulary training for specific robotic commands
+We don't want the robot listening 24/7 (privacy & cost). We use a lightweight "Wake Word" engine running locally.
 
-**ROS 2 Integration**:
-- Audio stream processing from robot microphones
-- Real-time transcription with low latency
-- Integration with robot decision-making systems
-- Context-aware speech recognition
+**Tools:**
+- **Porcupine (Picovoice)**: High accuracy, easy to use.
+- **OpenWakeWord**: Open source, runs on CPU.
 
-### Natural Language Understanding
+**Python Example (Porcupine):**
+```python
+import pvporcupine
+import pyaudio
 
-Once speech is converted to text, the robot must understand the user's intent:
+porcupine = pvporcupine.create(keywords=["jarvis"])
+pa = pyaudio.PyAudio()
+audio_stream = pa.open(
+    rate=porcupine.sample_rate,
+    channels=1,
+    format=pyaudio.paInt16,
+    input=True,
+    frames_per_buffer=porcupine.frame_length
+)
 
-**Intent Classification**:
-- Classify commands into predefined categories
-- Use machine learning models trained on robot commands
-- Handle variations in command phrasing
-- Maintain context across multiple interactions
+while True:
+    pcm = audio_stream.read(porcupine.frame_length)
+    keyword_index = porcupine.process(pcm)
+    if keyword_index >= 0:
+        print("Wake Word Detected!")
+        # Trigger Whisper...
+```
 
-**Entity Recognition**:
-- Identify objects, locations, and other entities in commands
-- Map recognized entities to robot knowledge base
-- Handle ambiguous references with clarification requests
-- Maintain spatial and temporal context
+## 2. Speech-to-Text (Whisper)
 
-### Dialogue Management
+Once awake, we record audio and send it to **OpenAI Whisper**.
 
-Robust robot systems maintain conversational context:
+**Why Whisper?**
+- It's robust to accents and background noise.
+- It handles technical jargon well.
 
-**State Management**:
-- Track conversation history
-- Maintain world state relevant to the conversation
-- Handle follow-up questions and commands
-- Manage multi-turn interactions
+**Implementation:**
+```python
+import openai
+import sounddevice as sd
+import scipy.io.wavfile as wav
 
-**Ambiguity Resolution**:
-- Recognize when commands are unclear
-- Ask clarifying questions
-- Use context to disambiguate commands
-- Provide feedback on interpretation
+def record_audio(duration=5, fs=44100):
+    print("Listening...")
+    recording = sd.rec(int(duration * fs), samplerate=fs, channels=1)
+    sd.wait()
+    wav.write("command.wav", fs, recording)
+    return "command.wav"
 
-## Vision-Language-Action (VLA) Integration
+def transcribe(filename):
+    audio_file = open(filename, "rb")
+    transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    return transcript["text"]
+```
 
-The VLA framework connects visual perception with language understanding to enable complex robot behaviors:
+## 3. Natural Language Understanding (LLM)
 
-### Visual Context Understanding
+Now we have text: *"Go to the kitchen and find me a soda."*
+We need to turn this into a ROS 2 command.
 
-Robot systems must connect what they see with language commands:
+**Prompt Engineering for Robotics:**
+We give the LLM a "System Prompt" that defines its persona and available tools.
 
-**Object Grounding**:
-- Map language references to visual objects
-- Use spatial relationships from visual data
-- Handle relative positioning ("the object on the left")
-- Distinguish between similar objects in the environment
+```python
+SYSTEM_PROMPT = """
+You are a robot assistant. You can control the robot using the following JSON commands:
+1. navigate(location: str)
+2. pick_up(object: str)
+3. say(text: str)
 
-**Scene Understanding**:
-- Interpret commands in the context of the current scene
-- Understand spatial relationships and affordances
-- Connect perceptual data with action possibilities
-- Handle dynamic environments where objects move
+User input will be natural language. You must output ONLY a valid JSON list of commands.
 
-### Action Planning from Language
+Example:
+User: "Get me a soda from the kitchen."
+Output: [
+    {"action": "navigate", "location": "kitchen"},
+    {"action": "pick_up", "object": "soda"},
+    {"action": "navigate", "location": "user"},
+    {"action": "say", "text": "Here is your soda."}
+]
+"""
 
-Convert high-level language commands into sequences of robot actions:
+def get_plan(user_text):
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_text}
+        ]
+    )
+    return response.choices[0].message.content
+```
 
-**Task Decomposition**:
-- Break complex commands into primitive actions
-- Create execution plans with appropriate sequencing
-- Handle conditional execution based on perception
-- Manage exceptions and error recovery
+## 4. The ROS 2 Voice Node
 
-**Multi-Modal Integration**:
-- Combine visual, auditory, and other sensor data
-- Use multiple modalities to disambiguate commands
-- Maintain consistent understanding across modalities
-- Handle cases where one modality is degraded
+We wrap everything into a ROS 2 node.
 
-## Implementation Strategies
+```python
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+import json
 
-### System Architecture
+class VoiceCommander(Node):
+    def __init__(self):
+        super().__init__('voice_commander')
+        self.publisher_ = self.create_publisher(String, 'robot_commands', 10)
+        self.listen_loop()
 
-A typical voice-to-action system includes:
+    def listen_loop(self):
+        # 1. Wait for Wake Word
+        # 2. Record & Transcribe
+        text = transcribe("command.wav")
+        self.get_logger().info(f"Heard: {text}")
+        
+        # 3. Get Plan from LLM
+        plan_json = get_plan(text)
+        
+        # 4. Publish Command
+        msg = String()
+        msg.data = plan_json
+        self.publisher_.publish(msg)
 
-**Audio Processing Pipeline**:
-- Microphone array processing for noise reduction
-- Voice activity detection to identify speech
-- Speech enhancement algorithms
-- Real-time processing capabilities
+def main():
+    rclpy.init()
+    node = VoiceCommander()
+    rclpy.spin(node)
+```
 
-**NLP Pipeline**:
-- Speech-to-text conversion
-- Natural language understanding
-- Intent and entity extraction
-- Dialogue state tracking
+## Handling Ambiguity
 
-**Action Mapping**:
-- Command-to-action translation
-- Plan generation and validation
-- Execution monitoring and feedback
-- Error handling and recovery
+What if the user says *"Go there"*? The robot doesn't know where "there" is.
+
+**Chain of Thought Prompting:**
+Update the system prompt to allow the robot to ask questions.
+
+```python
+SYSTEM_PROMPT += """
+If the command is ambiguous or missing information, output a JSON with action "ask":
+{"action": "ask", "question": "Where would you like me to go?"}
+"""
+```
+
+## Summary
+
+You have built a **Natural Language Interface** for your robot.
+- **Wake Word**: Efficient listening.
+- **Whisper**: Accurate hearing.
+- **LLM**: Intelligent understanding.
+- **JSON**: Structured action.
+
+---
+
+**Next:** Now that we have the components, let's design the final system in [Capstone Project Overview](../Capstone-Project/capstone-overview.md).

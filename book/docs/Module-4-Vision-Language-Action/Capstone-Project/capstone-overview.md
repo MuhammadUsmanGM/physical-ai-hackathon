@@ -6,40 +6,76 @@ sidebar_label: Capstone Project Overview
 
 # Humanoid Capstone Project Overview
 
-The Humanoid Capstone Project represents the culmination of your Physical AI & Humanoid Robotics journey, integrating all the concepts learned across the course modules into a comprehensive, functional humanoid robot system. This project challenges you to apply ROS 2 fundamentals, simulation techniques, NVIDIA Isaac platform capabilities, and AI integration to create an intelligent, embodied system capable of natural human interaction.
+The **Capstone Project** is the final exam of this course. It is not a multiple-choice test. It is a proof of competence. You will build a complete **Vision-Language-Action (VLA)** system that allows a humanoid robot to function as a helpful assistant.
 
-## Project Goals and Objectives
+## The Challenge: "The Butler Test"
 
-The primary goals of this capstone project are to:
+Your robot will be placed in a simulated home environment (Isaac Sim). It must pass the following scenario:
 
-1. **Demonstrate Integration**: Combine all course modules (ROS 2, Simulation, NVIDIA Isaac, VLA) into a cohesive system
-2. **Develop Practical Skills**: Apply theoretical knowledge to build and operate a humanoid robot system
-3. **Implement AI-Physical World Integration**: Create a system that bridges digital intelligence with physical embodiment
-4. **Foster Innovation**: Encourage creative solutions to complex humanoid robotics challenges
+1. **User Command**: "I'm working at the desk and I'm thirsty. Can you bring me a soda from the kitchen?"
+2. **Understanding**: The robot must parse "thirsty" -> "needs drink" -> "find soda".
+3. **Execution**:
+   - Navigate from the Living Room to the Kitchen.
+   - Detect the soda can on a cluttered table.
+   - Grasp the soda can.
+   - Navigate to the Desk.
+   - Place the soda can near the user.
+4. **Feedback**: "Here is your soda. Do you need anything else?"
 
-## Capstone Project Deliverables
+## System Architecture
 
-**Core System Components**:
-- Functional humanoid robot system (simulated or hardware-based)
-- Integrated perception and navigation stack
-- Human-robot interaction capabilities
-- Voice command processing and execution
+You will integrate every technology learned in this course:
 
-**Documentation**:
-- System architecture and design documentation
-- Code repositories with comprehensive comments
-- Performance evaluation and testing reports
-- User manual for system operation
+| Component | Technology | Function |
+|-----------|------------|----------|
+| **Brain (VLA)** | GPT-4 + Whisper | Understands speech, plans tasks. |
+| **Eyes (Perception)** | Isaac ROS VSLAM | Localizes the robot in the house. |
+| **Object Detection** | YOLOv8 / DOPE | Finds the soda can. |
+| **Legs (Navigation)** | Nav2 | Plans path from Room A to Room B. |
+| **Hands (Manipulation)** | MoveIt 2 | Plans arm trajectory to grasp. |
+| **Body (Simulation)** | Isaac Sim | The physical world. |
 
-**Demonstration**:
-- Live system demonstration (in simulation or on hardware)
-- Video presentation showcasing key capabilities
-- Technical presentation explaining design decisions
+## Requirements
 
-## Timeline and Milestones
+### Minimum Viable Product (MVP)
+- [ ] **Voice Interface**: Robot responds to "Hey Robot".
+- [ ] **Navigation**: Robot can move between at least 2 rooms autonomously.
+- [ ] **Grasping**: Robot can pick up at least 1 object type.
+- [ ] **Safety**: Robot does not collide with walls or furniture.
 
-The capstone project follows a structured timeline spanning the final weeks of the course:
+### Distinction Features (Optional)
+- [ ] **Memory**: "Where did I leave my keys?" (Robot remembers past locations).
+- [ ] **Error Recovery**: If it drops the can, it tries again.
+- [ ] **Multi-Modal**: "Bring me *that* red cup" (Pointing + Speech).
 
-**Week 11**: Project planning, team formation, and platform selection
-**Week 12**: Implementation and integration of core capabilities
-**Week 13**: Testing, refinement, and presentation preparation
+## Evaluation Criteria
+
+Your project will be graded on a 100-point scale:
+
+### 1. Autonomy (40 Points)
+- **40**: Zero human intervention.
+- **30**: One intervention (e.g., robot got stuck).
+- **10**: Teleoperated for part of the task.
+- **0**: Fully teleoperated.
+
+### 2. System Integration (30 Points)
+- **30**: Smooth hand-offs between VLA, Nav2, and MoveIt.
+- **15**: High latency or "stop-and-go" behavior.
+- **0**: Components work in isolation but not together.
+
+### 3. Complexity (20 Points)
+- **20**: Cluttered environment, dynamic obstacles.
+- **10**: Empty room, static environment.
+
+### 4. Presentation (10 Points)
+- **10**: Clear video demo, professional documentation.
+
+## Timeline
+
+- **Week 12**: Build the Voice Interface and VLA Planner.
+- **Week 13**: Integrate Perception (Isaac ROS) and Navigation.
+- **Week 14**: Manipulation (Grasping) and Final Polish.
+
+---
+
+**Next:** Let's break down the problem in [Planning and Design](./planning-and-design.md).

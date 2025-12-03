@@ -6,41 +6,224 @@ sidebar_label: Introduction to Gazebo
 
 # Introduction to Robotic Simulation with Gazebo
 
-Robotic simulation is a cornerstone of modern robotics development, enabling rapid prototyping, testing, and validation of complex systems without the need for expensive hardware or risk of damage. In Physical AI, simulation serves a dual purpose: it provides a safe environment to develop and test AI algorithms, and it enables the creation of digital twins that mirror real-world robotic systems.
+Gazebo is the standard simulation tool for ROS-based robotics. It allows you to simulate your robot's physical interactions with the world, test algorithms, and visualize sensor data in a safe, controlled environment.
 
-## The Critical Role of Simulation in Physical AI
+## Gazebo Classic vs. Gazebo (Ignition)
 
-Simulation bridges the gap between abstract AI algorithms and real-world physical systems. It allows developers to:
-- **Test and Validate**: Experiment with control algorithms, navigation strategies, and AI models before deploying to physical hardware
-- **Train Data-Hungry Models**: Generate vast amounts of training data for machine learning models that would be expensive to collect in the real world
-- **Risk-Free Development**: Make mistakes and iterate without the risk of damaging expensive robotic hardware
-- **Reproducible Research**: Create consistent, controllable experimental conditions that can be replicated
+There are currently two major versions of Gazebo:
 
-## Simulation vs. Reality: The Sim-to-Real Challenge
+| Feature | Gazebo Classic (v11) | Gazebo (Ignition) |
+|---------|----------------------|-------------------|
+| **Architecture** | Monolithic | Modular (Client-Server) |
+| **Rendering** | OGRE 1.x | OGRE 2.x (Physically Based Rendering) |
+| **Physics** | ODE (default), Bullet | Dart, Bullet, TPE |
+| **ROS Bridge** | `gazebo_ros_pkgs` | `ros_gz_bridge` |
+| **Status** | Stable, End-of-Life (2025) | Future Standard |
 
-The fundamental challenge in robotics simulation is the "reality gap"—the difference between simulated and real-world physics, sensors, and environments. Modern simulation tools have made significant progress in closing this gap through:
+**For this course, we will use Gazebo Classic (v11)** as it is the default for ROS 2 Humble and has the most extensive documentation and plugin support.
 
-- **Physics Fidelity**: Accurate modeling of friction, collisions, and material properties
-- **Sensor Simulation**: Realistic modeling of cameras, LiDAR, IMUs, and other sensors
-- **Environmental Complexity**: Detailed representation of lighting, textures, and environmental conditions
+## Installation
 
-## Gazebo Simulation Environment
+### Step 1: Install Gazebo 11
 
-Gazebo, now part of the Ignition suite, is the leading open-source robotics simulator. It provides accurate physics simulation, realistic sensor simulation, and seamless integration with ROS 2, making it the ideal platform for testing and developing robot algorithms.
+Gazebo 11 is usually installed automatically with `ros-humble-desktop`, but you can ensure you have all necessary packages:
 
-### Setting Up Gazebo with ROS 2
-
-Gazebo integrates with ROS 2 through the `ros_gz` package, which provides bridges between ROS 2 messages and Gazebo topics. The integration enables:
-
-- **Synchronous Control**: ROS 2 nodes can control robots in Gazebo in real-time
-- **Sensor Data**: Robot sensors in Gazebo publish data to ROS 2 topics
-- **Physics Simulation**: Gazebo's physics engine handles robot-environment interactions
-
-**Installation and Setup**:
 ```bash
-# Install Gazebo Garden (or Ignition Fortress)
-sudo apt install ros-humble-ros-gz
-
-# Launch Gazebo with ROS 2 bridge
-ros2 launch ros_gz_sim sim_world.launch.py world_name:=empty.sdf
+sudo apt update
+sudo apt install gazebo11 ros-humble-gazebo-ros-pkgs
 ```
+
+### Step 2: Verify Installation
+
+Run Gazebo from the terminal:
+
+```bash
+gazebo --verbose
+```
+
+You should see the Gazebo GUI open with an empty world.
+
+## The Gazebo Interface
+
+The Gazebo GUI consists of several key areas:
+
+1. **Scene View (Center)**: The 3D view of your simulation.
+   - **Left Click**: Select objects
+   - **Right Click**: Context menu (move, rotate, delete)
+   - **Scroll**: Zoom
+   - **Shift + Left Click**: Rotate camera
+
+2. **World Panel (Left)**:
+   - **World Tab**: Lists all models (ground plane, sun, robots) in the scene.
+   - **Insert Tab**: Library of models you can drag and drop into the world.
+   - **Layers Tab**: Manage visibility of model groups.
+
+3. **Toolbar (Top)**:
+   - **Select/Translate/Rotate/Scale**: Tools for manipulating objects.
+   - **Snap**: Snap objects to grid.
+   - **Copy/Paste**: Duplicate models.
+
+4. **Simulation Control (Bottom)**:
+   - **Play/Pause**: Start or stop physics.
+   - **Real Time Factor**: Speed of simulation vs. real time (1.0 = real time).
+   - **Sim Time**: Total elapsed simulation time.
+
+## Building Your First World
+
+Let's create a simple test environment.
+
+### 1. Add Objects
+1. Go to the **Insert** tab on the left.
+2. Find **Simple Shapes** (Box, Sphere, Cylinder).
+3. Drag a **Box** into the scene.
+4. Use the **Scale Tool** (top toolbar) to stretch it into a wall.
+5. Add a **Cylinder** and **Sphere** as obstacles.
+
+### 2. Add a Light Source
+1. The default world has a sun.
+2. You can add more lights from the toolbar (Point, Spot, Directional).
+
+### 3. Save the World
+1. File -> Save World As.
+2. Save as `my_first_world.world`.
+
+**World File Structure (.world)**:
+Gazebo worlds are XML files (SDF format).
+
+```xml
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    
+    <!-- Your custom box -->
+    <model name="my_box">
+      <pose>0 0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>
+```
+
+## Launching Gazebo with ROS 2
+
+To use Gazebo with ROS 2, we use launch files.
+
+Create a launch file `gazebo_world.launch.py`:
+
+```python
+import os
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import ExecuteProcess
+
+def generate_launch_description():
+    return LaunchDescription([
+        ExecuteProcess(
+            cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_init.so', '-s', 'libgazebo_ros_factory.so'],
+            output='screen'
+        ),
+    ])
+```
+
+**Key Plugins:**
+- `libgazebo_ros_init.so`: Initializes ROS 2 context in Gazebo.
+- `libgazebo_ros_factory.so`: Allows spawning robots from ROS 2.
+
+## Physics Engines
+
+Gazebo supports multiple physics engines. The default is **ODE (Open Dynamics Engine)**.
+
+| Engine | Characteristics | Best For |
+|--------|-----------------|----------|
+| **ODE** | Stable, good performance, default | General robotics, mobile bases |
+| **Bullet** | Better collision detection | Manipulation, stacking objects |
+| **Dart** | High accuracy for kinematic chains | Humanoids, complex linkages |
+| **Simbody** | Biomechanical accuracy | Biomechanics research |
+
+**Configuring Physics:**
+You can adjust physics parameters in the **World** panel -> **Physics**:
+- **Max Step Size**: Time per step (default 0.001s = 1000Hz).
+- **Real Time Update Rate**: Target frequency (1000Hz).
+- **Gravity**: Default (0, 0, -9.8).
+
+## Troubleshooting Common Issues
+
+### 1. Gazebo crashes on startup
+**Cause:** Graphics driver issues or VM limitations.
+**Fix:**
+```bash
+export SVGA_VGPU10=0  # For VMware
+gazebo --verbose      # Check logs
+```
+
+### 2. "Real Time Factor" is low (< 0.5)
+**Cause:** Simulation is too heavy for CPU.
+**Fix:**
+- Remove complex models.
+- Increase `max_step_size` (reduces accuracy).
+- Use a dedicated GPU.
+
+### 3. Models look black or missing textures
+**Cause:** Missing material scripts or lighting.
+**Fix:**
+- Ensure `<uri>model://sun</uri>` is in world file.
+- Check `GAZEBO_MODEL_PATH` environment variable.
+
+### 4. Robot falls through ground
+**Cause:** Missing collision geometry or ground plane.
+**Fix:**
+- Check `<collision>` tags in URDF/SDF.
+- Ensure ground plane is present at z=0.
+
+## Best Practices
+
+1. **Separate Visual and Collision Meshes**:
+   - Visual: High-poly .dae/.stl (looks good).
+   - Collision: Simple shapes (box/cylinder) or low-poly hull (fast physics).
+
+2. **Use Model Database**:
+   - Don't reinvent the wheel. Use standard models for tables, walls, etc.
+   - `https://app.gazebosim.org/fuel`
+
+3. **Keep It Simple**:
+   - Start with simple primitives.
+   - Only add complexity (mesh details) when necessary.
+
+4. **Domain Randomization**:
+   - Vary friction, mass, and lighting in simulation to make your AI robust.
+
+## Summary
+
+Gazebo is a powerful tool that simulates the physical world for your robot. By mastering:
+- **World Building**: Creating environments.
+- **Physics Configuration**: Tuning the engine.
+- **ROS Integration**: Connecting to your code.
+
+You create the "Digital Twin" where your Physical AI will learn and evolve.
+
+---
+
+**Next:** Learn how to create robot models and add sensors in [Robot Models and Sensors](./robot-models-sensors-gazebo.md).

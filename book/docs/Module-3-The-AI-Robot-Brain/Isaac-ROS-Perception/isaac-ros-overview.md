@@ -6,49 +6,104 @@ sidebar_label: Isaac ROS Overview
 
 # Isaac ROS and Perception
 
-Isaac ROS represents NVIDIA's effort to accelerate ROS 2 with hardware-accelerated perception and navigation capabilities. These packages leverage NVIDIA GPUs and specialized hardware (like Jetson) to provide real-time performance for computationally intensive robotic tasks.
+**Isaac ROS** is a collection of hardware-accelerated ROS 2 packages (GEMs) that allow your robot to perform complex perception tasks (SLAM, Object Detection) in real-time on NVIDIA GPUs.
 
-## Hardware Accelerated Packages
+## Why Isaac ROS?
 
-Isaac ROS includes several hardware-accelerated packages:
+Standard ROS nodes run on the CPU. This is fine for simple tasks, but modern AI requires massive parallel processing.
 
-**Isaac ROS Visual SLAM (VSLAM)**: Provides GPU-accelerated visual SLAM capabilities for real-time mapping and localization. This package combines visual-inertial odometry with loop closure detection to create accurate 3D maps of the environment.
+| Task | CPU (Standard ROS) | GPU (Isaac ROS) |
+|------|--------------------|-----------------|
+| **Visual SLAM** | 10-15 FPS | 60+ FPS |
+| **Object Detection** | 5 FPS (YOLO) | 30+ FPS (YOLO + TensorRT) |
+| **3D Reconstruction** | Slow, Low Res | Real-time, High Res (Nvblox) |
 
-**Isaac ROS AprilTag Detection**: Accelerated detection and pose estimation of AprilTag fiducial markers, essential for robot calibration and navigation.
+## Architecture: NITROS and CUDA
 
-**Isaac ROS Stereo DNN**: Hardware-accelerated deep neural network inference for stereo vision tasks, including object detection and semantic segmentation.
+Isaac ROS uses **NITROS** (NVIDIA Isaac Transport for ROS), which optimizes message passing.
+- Instead of serializing/deserializing messages between nodes (slow), NITROS passes pointers to GPU memory (zero-copy).
+- This means an image captured by the camera stays in GPU memory through the entire pipeline (Rectification -> Inference -> SLAM).
 
-**Isaac ROS Point Cloud Generation**: Real-time conversion of stereo camera data to point clouds with GPU acceleration.
+## Installation Guide (Docker)
 
-## Visual SLAM Implementation
+Isaac ROS is best run inside a Docker container to manage dependencies (CUDA, TensorRT).
 
-Visual SLAM (Simultaneous Localization and Mapping) is crucial for humanoid robots navigating unknown environments:
+### Prerequisites
+- **OS**: Ubuntu 20.04/22.04
+- **Hardware**: NVIDIA Jetson Orin OR x86 PC with RTX GPU
+- **Software**: Docker, NVIDIA Container Toolkit
 
-**Components of Visual SLAM**:
-- **Visual Odometry**: Tracking camera motion relative to the environment
-- **Loop Closure**: Recognizing previously visited locations to correct drift
-- **Global Map Optimization**: Maintaining consistent global map of the environment
+### Step 1: Setup Workspace
+```bash
+mkdir -p ~/isaac_ros_ws/src
+cd ~/isaac_ros_ws/src
+git clone https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_common.git
+```
 
-**Isaac ROS VSLAM Advantages**:
-- **GPU Acceleration**: 10x faster performance compared to CPU-only implementations
-- **Real-time Operation**: Capable of processing high-resolution imagery in real-time
-- **Robust Tracking**: Maintains tracking even in challenging lighting conditions
+### Step 2: Clone Packages
+For this module, we need VSLAM and Nvblox.
+```bash
+git clone https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_visual_slam.git
+git clone https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_nvblox.git
+```
 
-## AI-Powered Perception Stack
+### Step 3: Build and Run Container
+```bash
+cd ~/isaac_ros_ws/src/isaac_ros_common
+./scripts/run_dev.sh
+```
+*This command builds the Docker image and drops you into a shell inside the container.*
 
-Isaac ROS provides a comprehensive perception stack optimized for robotics:
+### Step 4: Build ROS Packages
+Inside the container:
+```bash
+colcon build --symlink-install
+source install/setup.bash
+```
 
-**Object Detection and Tracking**:
-- Real-time detection of objects in the environment
-- 3D bounding box estimation
-- Multi-object tracking for dynamic scenes
+## Key Packages (GEMs)
 
-**Semantic Segmentation**:
-- Pixel-level classification of scene elements
-- Differentiation between navigable and non-navigable surfaces
-- Human and obstacle identification
+### 1. Isaac ROS Visual SLAM
+Provides robust localization in GPS-denied environments using stereo cameras.
+- **Input**: Stereo Images + IMU
+- **Output**: Robot Pose (Odometry)
 
-**Pose Estimation**:
-- 6D pose estimation for objects of interest
-- Essential for manipulation tasks
-- Integration with planning and control systems
+### 2. Nvblox
+Builds a 3D map of the environment in real-time for navigation.
+- **Input**: Depth Image + Pose
+- **Output**: 3D Costmap (ESDF) for Nav2
+
+### 3. Isaac ROS DNN Inference
+Runs deep learning models (YOLO, DOPE) using TensorRT.
+- **Input**: Image
+- **Output**: Bounding Boxes / Segmentation Masks
+
+## Hands-On: Running Visual SLAM
+
+Let's run VSLAM using a pre-recorded bag file (or simulation).
+
+### 1. Download Data
+```bash
+# Inside container
+sudo apt-get install -y ros-humble-isaac-ros-test
+```
+
+### 2. Launch VSLAM
+```bash
+ros2 launch isaac_ros_visual_slam isaac_ros_visual_slam_isaac_sim.launch.py
+```
+
+### 3. Visualize in RViz
+Open RViz2 on your host machine (or inside container if GUI is enabled).
+- **Fixed Frame**: `map`
+- **Add Display**: `TF`, `Odometry` (Topic: `/visual_slam/tracking/odometry`)
+
+You should see the robot's path being traced as it moves.
+
+## Summary
+
+Isaac ROS unlocks the "Supercomputer" inside your robot. By moving heavy computation to the GPU, you free up the CPU for high-level logic and decision making.
+
+---
+
+**Next:** Deploy this brain to the body in [Jetson Platform and Navigation](./jetson-platform-navigation.md).

@@ -6,47 +6,136 @@ sidebar_label: Introduction to Isaac Sim
 
 # Introduction to NVIDIA Isaac Sim
 
-The NVIDIA Isaac platform represents a comprehensive ecosystem for developing, simulating, and deploying AI-powered robots. Built on NVIDIA's CUDA parallel computing platform and Tensor Core technology, Isaac provides the tools, libraries, and frameworks necessary to create sophisticated robotic systems that can perceive, understand, and navigate the physical world.
+**NVIDIA Isaac Sim™** is a reference application built on **NVIDIA Omniverse™** for designing, simulating, testing, and training AI-based robots. Unlike Gazebo, which focuses on physics, Isaac Sim focuses on **photorealism** and **physics fidelity** to close the Sim-to-Real gap.
 
-## The Isaac Ecosystem
+## Why Isaac Sim?
 
-The Isaac platform is composed of three main components that work together to accelerate the development of AI-powered robots:
+| Feature | Gazebo | Isaac Sim |
+|---------|--------|-----------|
+| **Engine** | OGRE (Game-like) | RTX (Ray Tracing) |
+| **Physics** | ODE/Bullet | PhysX 5.0 (GPU Accelerated) |
+| **Assets** | URDF/SDF | USD (Universal Scene Description) |
+| **Scripting** | C++/Python | Python (Async) |
+| **Hardware** | CPU Heavy | GPU Heavy (RTX Required) |
 
-**Isaac Sim**: A high-fidelity simulation environment built on NVIDIA Omniverse, designed for photorealistic robot simulation and synthetic data generation. Isaac Sim enables testing and training of robots before deployment to the real world, significantly reducing development time and risk.
+## Installation Guide
 
-**Isaac ROS**: A collection of hardware-accelerated ROS 2 packages that accelerate perception, navigation, and manipulation tasks. Isaac ROS packages leverage NVIDIA GPUs and specialized hardware to provide real-time performance for computationally intensive operations.
+### Prerequisites
+- **OS**: Ubuntu 20.04/22.04 or Windows 10/11
+- **GPU**: NVIDIA RTX 2070 or higher (8GB+ VRAM)
+- **Driver**: NVIDIA Driver 525.85+
 
-**Isaac SDK**: A software development kit that provides tools, libraries, and frameworks for building AI-powered robots. The SDK includes Isaac Navigation, Isaac Manipulation, and Isaac Apps for creating complete robotic applications.
+### Step 1: Install Omniverse Launcher
+1. Download the **Omniverse Launcher** from the [NVIDIA website](https://www.nvidia.com/en-us/omniverse/download/).
+2. Install and log in with your NVIDIA Developer account.
 
-## The Role of Isaac in Physical AI
+### Step 2: Install Isaac Sim
+1. Open the **Exchange** tab in the Launcher.
+2. Search for "Isaac Sim".
+3. Click **Install**.
+4. Once installed, go to **Library** and click **Launch**.
 
-In the context of Physical AI and humanoid robotics, the Isaac platform serves several critical functions:
+### Step 3: Install Nucleus Service
+Nucleus is the database server for sharing assets.
+1. In the Launcher, go to the **Nucleus** tab.
+2. Click **Add Local Nucleus Service**.
+3. Create an admin account.
 
-- **Photorealistic Simulation**: Enables the generation of synthetic data that can train AI models to work effectively in the real world
-- **Hardware Acceleration**: Leverages NVIDIA GPUs to provide real-time performance for perception and control algorithms
-- **Sim-to-Real Transfer**: Provides frameworks and tools to bridge the gap between simulation and real-world deployment
-- **Perception Stack**: Offers advanced perception capabilities including VSLAM, object detection, and 3D reconstruction
+## The Omniverse Interface
 
-## Isaac Sim for Robot Simulation
+When you launch Isaac Sim, you'll see the **Viewport** and several panels:
 
-Isaac Sim stands as the cornerstone of the Isaac ecosystem, providing a physically accurate and photorealistic simulation environment for robotics development. Built on NVIDIA Omniverse, it enables developers to create detailed digital twins of robotic systems and their environments.
+1. **Viewport (Center)**: The 3D view.
+   - **Right Click + WASD**: Fly around.
+   - **Alt + Left Click**: Orbit.
+   - **Alt + Middle Click**: Pan.
 
-### Omniverse Integration and USD Format
+2. **Stage (Right)**: The hierarchy of objects (like the World panel in Gazebo).
+   - Everything is a "Prim" (Primitive).
 
-Isaac Sim leverages NVIDIA Omniverse's Universal Scene Description (USD) format to create and manipulate 3D scenes. USD provides several advantages:
+3. **Property (Right-Bottom)**: Settings for the selected Prim.
+   - Transform (Position, Rotation).
+   - Physics (Mass, Collision).
+   - Material (Textures).
 
-- **Interoperability**: Exchange data between different 3D applications seamlessly
-- **Scalability**: Handle complex scenes with millions of polygons efficiently
-- **Extensibility**: Add custom extensions for robotics-specific requirements
+4. **Content (Bottom)**: File browser for your Nucleus server.
+   - Access NVIDIA Assets: `omniverse://localhost/NVIDIA/Assets/Isaac`.
 
-**USD Scene Structure**:
+## Understanding USD (Universal Scene Description)
+
+Isaac Sim uses **USD**, a file format developed by Pixar.
+
+- **Layering**: You can have a "Robot" layer and an "Environment" layer. Changes in one don't destroy the other.
+- **Non-Destructive**: You can "override" properties (e.g., make the robot red) without changing the original file.
+- **Composition**: A scene is composed of many references to other USD files.
+
+## Your First Simulation: "Hello World"
+
+Let's spawn a cube and make it fall.
+
+### Method 1: GUI
+1. **Create -> Shape -> Cube**.
+2. Select the Cube in the Stage.
+3. In **Property** panel, scroll to **Physics**.
+4. Click **Add -> Physics -> Rigid Body with Colliders Preset**.
+5. Press **Play** (Spacebar). The cube falls!
+
+### Method 2: Python Scripting
+Isaac Sim has a built-in Script Editor (**Window -> General -> Script Editor**).
+
 ```python
-# Creating a robot in USD
-from omni.isaac.core.utils.stage import add_reference_to_stage
-from omni.isaac.core.utils.nucleus import get_assets_root_path
+from omni.isaac.core.objects import DynamicCuboid
+from omni.isaac.core.world import World
+import numpy as np
 
-# Add robot asset to current stage
-assets_root_path = get_assets_root_path()
-robot_asset_path = assets_root_path + "/Isaac/Robots/Franka/franka.usd"
-add_reference_to_stage(usd_path=robot_asset_path, prim_path="/World/Robot")
+# Initialize the world
+world = World()
+world.scene.clear()
+
+# Add a ground plane
+world.scene.add_default_ground_plane()
+
+# Add a dynamic cube (Red)
+cube = world.scene.add(
+    DynamicCuboid(
+        prim_path="/World/MyCube",
+        name="my_cube",
+        position=np.array([0, 0, 1.0]),
+        scale=np.array([0.5, 0.5, 0.5]),
+        color=np.array([1.0, 0, 0]),
+    )
+)
+
+# Reset the world to apply changes
+world.reset()
+
+# Run the simulation loop
+for i in range(500):
+    world.step(render=True)
 ```
+
+## Importing a Robot (URDF to USD)
+
+Most robots exist as URDFs. Isaac Sim has a powerful importer.
+
+1. **Isaac Utils -> Workflows -> URDF Importer**.
+2. **Input File**: Select your `.urdf` file.
+3. **Import Settings**:
+   - **Fix Base Link**: Check this if it's a manipulator arm. Uncheck for mobile robots.
+   - **Joint Drive Type**: Select "Position" for arms, "Velocity" for wheels.
+4. Click **Import**.
+
+The robot is converted to USD and appears in the stage.
+
+## Summary
+
+Isaac Sim is a leap forward in simulation technology. It requires a mindset shift from "files and meshes" (Gazebo) to "stages and layers" (USD).
+
+**Key Takeaways:**
+- **Nucleus** stores your files.
+- **USD** is the file format.
+- **Python** is the scripting language.
+
+---
+
+**Next:** Learn how to rig robots and create complex scenes in [Robot Assets and Simulation](./robot-assets-simulation.md).

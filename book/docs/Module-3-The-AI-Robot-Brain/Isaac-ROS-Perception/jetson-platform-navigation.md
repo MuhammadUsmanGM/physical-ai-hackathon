@@ -6,77 +6,119 @@ sidebar_label: Jetson Platform and Navigation
 
 # NVIDIA Jetson Platform and Isaac Navigation
 
-## NVIDIA Jetson Platform for Edge AI
+The **NVIDIA Jetson** is the brain of your robot. It brings server-class AI performance to the edge. In this chapter, we deploy our Isaac ROS stack to a Jetson Orin and integrate it with **Nav2** for autonomous navigation.
 
-The NVIDIA Jetson platform provides the hardware foundation for deploying Isaac ROS applications at the edge:
+## The Jetson Orin Family
 
-**Jetson Orin Series**: The latest generation offering up to 275 TOPS of AI performance in a power-efficient package, ideal for humanoid robotics.
+| Model | AI Performance | Memory | Power | Best For |
+|-------|----------------|--------|-------|----------|
+| **Orin Nano** | 40 TOPS | 8GB | 7-15W | Entry-level, Basic VSLAM |
+| **Orin NX** | 100 TOPS | 16GB | 10-25W | Advanced Perception, Mobile Robots |
+| **AGX Orin** | 275 TOPS | 64GB | 15-60W | Humanoids, Full Autonomy |
 
-**Hardware Accelerators**:
-- **Tensor Cores**: Accelerate deep learning inference
-- **CUDA Cores**: Handle parallel computation tasks
-- **Video Processing Units**: Accelerate video encoding/decoding
-- **Image Signal Processors**: Process camera data efficiently
+**Architecture**:
+- **Ampere GPU**: For CUDA/TensorRT acceleration.
+- **ARM Cortex CPU**: For general ROS nodes.
+- **DLA (Deep Learning Accelerator)**: Dedicated hardware for inference.
 
-**Edge Deployment Considerations**:
-- **Power Efficiency**: Balance performance with power consumption
-- **Thermal Management**: Ensure reliable operation in constrained environments
-- **Real-time Performance**: Maintain deterministic response times
-- **Robustness**: Handle harsh operating conditions
+## Setting Up Your Jetson
 
-## Isaac ROS Navigation Stack
+### Step 1: Flash JetPack 6.0
+JetPack includes Linux (Ubuntu 22.04), CUDA, TensorRT, and ROS 2 drivers.
+1. Download **NVIDIA SDK Manager** on a host PC.
+2. Connect Jetson via USB-C.
+3. Select **JetPack 6.0** and flash.
 
-Isaac ROS extends the traditional ROS navigation stack with perception-enhanced capabilities:
+### Step 2: Install Isaac ROS
+(Same as previous chapter, but on the Jetson).
+```bash
+# Maximize performance
+sudo jetson_clocks
+```
 
-**Perception-Aware Navigation**:
-- Integration of 3D perception for safe navigation
-- Dynamic obstacle avoidance
-- Semantic navigation using scene understanding
+## The Navigation Pipeline (Nav2)
 
-**Path Planning**:
-- 3D path planning considering terrain and obstacles
-- Trajectory optimization for smooth robot motion
-- Human-aware navigation in shared spaces
+**Nav2** is the standard navigation stack for ROS 2. We will power it with Isaac ROS.
 
-## Developing with Isaac SDK
+```mermaid
+graph TD
+    A[Camera] -->|Images| B[Isaac ROS VSLAM]
+    A -->|Depth| C[Isaac ROS Nvblox]
+    B -->|Pose| D[Nav2 AMCL/Localization]
+    C -->|3D Costmap| E[Nav2 Controller]
+    E -->|Velocity| F[Robot Wheels]
+```
 
-The Isaac SDK provides a comprehensive framework for building AI-powered robots, offering high-level abstractions for common robotic tasks while maintaining performance through NVIDIA's hardware acceleration.
+### 1. Localization (VSLAM)
+Instead of using a Lidar and a pre-made map (AMCL), we use **Visual SLAM**.
+- The robot wakes up, looks around, and knows where it is.
+- It builds a map of features (sparse map) as it moves.
 
-### Isaac Navigation Framework
+### 2. Mapping (Nvblox)
+Nvblox creates a high-resolution 3D map of obstacles in real-time.
+- Unlike 2D Costmaps (flat), Nvblox sees overhangs (tables) and complex geometry.
+- This is critical for humanoids to avoid bumping their heads or tripping.
 
-Isaac Navigation provides a complete mapping and navigation solution:
+## Configuring Nav2 for Humanoids
 
-**Mapping Capabilities**:
-- Real-time 2D and 3D mapping
-- Integration with SLAM algorithms
-- Semantic mapping with object labeling
+Humanoids are not differential drive robots. They walk.
 
-**Navigation Features**:
-- Global path planning with A* or Dijkstra algorithms
-- Local obstacle avoidance using DWA or TEB planners
-- Human-aware navigation considering social conventions
-- Multi-floor navigation with elevator support
+### Footstep Planning
+We need a custom planner that understands stepping.
 
-**Localization System**:
-- AMCL (Adaptive Monte Carlo Localization) for 2D navigation
-- 3D localization using point cloud registration
-- Multi-sensor fusion for robust localization
+**Behavior Tree Configuration**:
+```xml
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <PipelineSequence name="NavigateWithReplanning">
+      <RateController hz="1.0">
+        <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+      </RateController>
+      <FollowPath path="{path}" controller_id="FollowPath"/>
+    </PipelineSequence>
+  </BehaviorTree>
+</root>
+```
 
-### Isaac Manipulation Framework
+### Controller Tuning
+In `nav2_params.yaml`:
+```yaml
+controller_server:
+  ros__parameters:
+    FollowPath:
+      plugin: "dwb_core::DWBLocalPlanner"
+      max_vel_x: 0.5  # Walking speed
+      max_vel_theta: 0.5 # Turning speed
+      # Humanoids can't spin in place instantly
+      min_speed_xy: 0.0
+```
 
-For humanoid robots with manipulation capabilities, Isaac Manipulation provides:
+## Hands-On: Autonomous Navigation
 
-**Grasp Planning**:
-- Automatic grasp pose generation
-- Integration with perception for object-specific grasping
-- Multi-fingered hand control
+### 1. Launch the Stack
+```bash
+# On Jetson
+ros2 launch isaac_ros_examples mobile_robot_nav.launch.py
+```
 
-**Motion Planning**:
-- Inverse kinematics solvers for articulated robots
-- Collision-free trajectory generation
-- Cartesian path planning for precise manipulation
+### 2. Send a Goal
+1. Open RViz.
+2. Click **2D Nav Goal**.
+3. Click a point on the map.
 
-**Force Control**:
-- Impedance control for compliant manipulation
-- Force feedback integration
-- Safe interaction with humans and objects
+**What happens:**
+1. **Global Planner** finds a path from A to B.
+2. **Local Planner** generates velocity commands (`cmd_vel`) to follow the path while avoiding dynamic obstacles (people).
+3. **Isaac ROS** provides the map and pose updates at 60Hz.
+
+## Summary
+
+You have now built a complete "Brain" for your robot:
+- **Isaac Sim**: Trained the mind in the Matrix.
+- **Isaac ROS**: Gave it super-human perception.
+- **Jetson**: Put the brain in a body.
+- **Nav2**: Taught it how to move.
+
+---
+
+**Module 3 Complete!** The robot can see and think. Now, let's give it a voice and higher-level reasoning in [Module 4: Vision-Language-Action (VLA)](../../Module-4-Vision-Language-Action/index.md).
