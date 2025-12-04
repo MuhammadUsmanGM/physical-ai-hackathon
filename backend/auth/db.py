@@ -72,5 +72,37 @@ async def get_user_by_email(email: str):
             return dict(row)
         return None
 
-# Note: create_user and update_user are now handled by Node.js Auth Server
-# We only need read access in Python backend
+async def update_user(email: str, update_data: dict):
+    """Update user data (for onboarding)"""
+    async with pool.acquire() as conn:
+        # Build dynamic update query
+        set_clauses = []
+        values = []
+        param_count = 1
+        
+        for key, value in update_data.items():
+            if key != 'email':  # Don't update email
+                # Handle camelCase to snake_case mapping if needed, or assume columns exist
+                # Better Auth uses camelCase for some fields, but we added custom fields
+                # We'll assume the custom fields are snake_case as defined in our schema
+                set_clauses.append(f'"{key}" = ${param_count}')
+                values.append(value)
+                param_count += 1
+        
+        if not set_clauses:
+            return await get_user_by_email(email)
+        
+        values.append(email)
+        query = f'''
+            UPDATE "user" 
+            SET {', '.join(set_clauses)}
+            WHERE email = ${param_count}
+            RETURNING *
+        '''
+        
+        try:
+            row = await conn.fetchrow(query, *values)
+            return dict(row) if row else None
+        except Exception as e:
+            print(f"Error updating user: {e}")
+            return None
