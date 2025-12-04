@@ -1,0 +1,80 @@
+.personalizeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin-left: 12px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.1));
+  border: 1.5px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(139, 92, 246);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.personalizeBtn:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(124, 58, 237, 0.15));
+  border-color: rgb(139, 92, 246);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+}
+
+.personalizeBtn:active {
+  transform: translateY(0);
+}
+
+.personalizeBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.personalizeBtn.active {
+  background: linear-gradient(135deg, rgb(139, 92, 246), rgb(124, 58, 237));
+  border-color: rgb(139, 92, 246);
+  color: white;
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.3);
+}
+
+.icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.text {
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 600;
+}
+
+.spinner {
+  display: inline-block;
+  font-size: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+[data-theme='dark'] .personalizeBtn {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(124, 58, 237, 0.15));
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+[data-theme='dark'] .personalizeBtn:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(124, 58, 237, 0.2));
+  border-color: rgb(139, 92, 246);
+}
+
+[data-theme='dark'] .personalizeBtn.active {
+  background: linear-gradient(135deg, rgb(139, 92, 246), rgb(124, 58, 237));
+  color: white;
+}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import DocItem from '@theme-original/DocItem';
+import PersonalizeButton from '@site/src/components/PersonalizeButton';
 import styles from './styles.module.css';
 
 export default function DocItemWrapper(props) {
@@ -82,6 +83,7 @@ export default function DocItemWrapper(props) {
   return (
     <div className={styles.docItemContainer}>
       <div className={styles.translateButtonWrapper}>
+        <PersonalizeButton />
         <button
           className={`${styles.translateBtn} ${isUrdu ? styles.active : ''}`}
           onClick={handleToggle}

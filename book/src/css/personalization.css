@@ -1,0 +1,124 @@
+/* Global personalization styles */
+
+/* Tooltips for technical terms (beginner mode) */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  border-bottom: 2px dotted rgba(139, 92, 246, 0.5);
+  cursor: help;
+  color: rgb(139, 92, 246);
+  font-weight: 600;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 280px;
+  background-color: rgba(139, 92, 246, 0.95);
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px 12px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -140px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(139, 92, 246, 0.95) transparent transparent transparent;
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Language highlight badges */
+.lang-highlight {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+  color: rgb(16, 185, 129);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Skill hints */
+.skill-hint {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.beginner-hint {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.15));
+  color: rgb(59, 130, 246);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.advanced-hint {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+  color: rgb(239, 68, 68);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Personalized content adjustments */
+.personalized.level-beginner {
+  /* Beginner mode: larger text, more spacing */
+  font-size: 1.05em;
+  line-height: 1.8;
+}
+
+.personalized.level-beginner h2,
+.personalized.level-beginner h3 {
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 2px solid rgba(59, 130, 246, 0.2);
+}
+
+.personalized.level-advanced {
+  /* Advanced mode: more compact */
+  font-size: 0.95em;
+}
+
+/* Dark theme adjustments */
+[data-theme='dark'] .tooltip-text {
+  background-color: rgba(139, 92, 246, 0.98);
+}
+
+[data-theme='dark'] .lang-highlight {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+[data-theme='dark'] .beginner-hint {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+[data-theme='dark'] .advanced-hint {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+  border-color: rgba(239, 68, 68, 0.4);
+}
