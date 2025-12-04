@@ -65,22 +65,14 @@ async def root():
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: QueryRequest):
     """
-    Main chat endpoint that processes user queries using the RAG system
+    Main chat endpoint that processes user queries using the AI agent
     """
     try:
-        if request.module:
-            # Query within specific module
-            response = rag_system.query_by_module(
-                query=request.query,
-                module_name=request.module,
-                top_k=request.top_k
-            )
-        else:
-            # General query
-            response = rag_system.chat_with_gemini(request.query)
+        from .physical_ai_agent import chat_with_physical_ai_assistant
         
-        # For now, returning just the response
-        # In a complete implementation, we would return the relevant chunks too
+        # Use the agent to process the query
+        response = chat_with_physical_ai_assistant(request.query)
+        
         return ChatResponse(response=response)
     
     except Exception as e:
