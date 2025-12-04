@@ -284,9 +284,13 @@ body {
   border: none;
   padding: 1.2rem 3rem;
   font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: none;
   box-shadow: 0 0 20px rgba(0, 230, 118, 0.2);
   border: 3px solid transparent;
   background-clip: padding-box;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Moving Gradient Border Effect - GREEN THEME */

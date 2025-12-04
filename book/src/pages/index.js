@@ -15,7 +15,7 @@ function HomepageHeader() {
           <Link
             className="button button--primary button--lg delay-2"
             to="/docs/module-01">
-            Start Your Journey Now 🚀
+            Begin Your Physical AI Journey
           </Link>
         </div>
       </div>
