@@ -186,7 +186,7 @@ html:not(.home) body {
 /* Dynamic Cyber Grid Background */
 /* Enhanced Hero Banner with better structure */
 .heroBanner {
-  padding: 10rem 0 8rem;
+  padding: 5rem 0 6rem; /* Reduced top padding to move up */
   position: relative;
   overflow: visible; /* Allow pattern to show through */
   background: transparent !important;
@@ -194,7 +194,7 @@ html:not(.home) body {
   align-items: center;
   justify-content: center;
   z-index: 1; /* Ensure content appears above background */
-  min-height: 100vh;
+  min-height: 80vh; /* Reduced min-height */
   box-sizing: border-box;
 }
 
@@ -215,7 +215,7 @@ html:not(.home) body {
 
 /* Enhanced hero title with better styling */
 .hero__title {
-  font-size: 5rem;
+  font-size: 5.5rem; /* Increased size for impact */
   line-height: 1.1;
   font-weight: 900;
   margin-bottom: 1.5rem;
@@ -230,7 +230,7 @@ html:not(.home) body {
   position: relative;
   z-index: 2;
   text-align: center;
-  max-width: 900px;
+  max-width: 1200px; /* Increased width to prevent breaking */
 }
 
 [data-theme='light'] .hero__title {

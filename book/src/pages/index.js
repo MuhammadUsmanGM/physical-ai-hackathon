@@ -9,7 +9,10 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero heroBanner', styles.heroBanner)}>
       <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
+        <h1 className="hero__title">
+          Physical AI & Humanoid<br />
+          Robotics
+        </h1>
         <p className="hero__subtitle delay-1">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           <Link
