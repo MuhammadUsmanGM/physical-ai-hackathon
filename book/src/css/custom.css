@@ -293,21 +293,18 @@ body {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Moving Gradient Border Effect - GREEN THEME */
+/* Static Border Effect - GREEN THEME */
 .button--primary::before {
   content: '';
   position: absolute;
   top: -4px; right: -4px; bottom: -4px; left: -4px;
-  /* Green-themed gradient as requested */
-  background: linear-gradient(90deg, 
-    var(--ifm-color-primary), 
-    #b9f6ca, 
-    var(--ifm-color-primary-dark), 
+  background: linear-gradient(90deg,
+    var(--ifm-color-primary),
+    var(--ifm-color-primary-dark),
     var(--ifm-color-primary));
-  background-size: 300% 300%;
   z-index: -1;
   border-radius: 54px;
-  animation: borderAnimate 3s linear infinite;
+  transition: all 0.3s ease;
 }
 
 /* Inner glow on hover */
@@ -315,23 +312,24 @@ body {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(circle at center, rgba(0, 230, 118, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(0, 230, 118, 0.2) 0%, transparent 70%);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: -1;
-}
-
-@keyframes borderAnimate {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  border-radius: 50px;
 }
 
 .button--primary:hover {
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 0 50px rgba(0, 230, 118, 0.6);
+  box-shadow: 0 0 30px rgba(0, 230, 118, 0.4);
   color: white;
-  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+.button--primary:hover::before {
+  background: linear-gradient(90deg,
+    var(--ifm-color-primary-light),
+    var(--ifm-color-primary),
+    var(--ifm-color-primary-lighter));
 }
 
 .button--primary:hover::after {
