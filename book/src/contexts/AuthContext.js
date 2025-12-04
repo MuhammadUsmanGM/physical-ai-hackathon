@@ -1,84 +1,71 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authClient } from '../lib/auth-client';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Check for stored token on mount
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetchUserProfile(token);
-    } else {
-      setLoading(false);
-    }
+    // Check session on mount
+    const checkSession = async () => {
+      try {
+        const { data } = await authClient.getSession();
+        if (data) {
+          setUser(data.user);
+          setSession(data.session);
+        }
+      } catch (error) {
+        console.error('Session check failed', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    checkSession();
   }, []);
 
-  const fetchUserProfile = async (token) => {
-    try {
-      const response = await fetch('http://localhost:8000/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-      } else {
-        localStorage.removeItem('token');
-      }
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      localStorage.removeItem('token');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const login = async (email, password) => {
-    const response = await fetch('http://localhost:8000/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+    const { data, error } = await authClient.signIn.email({
+      email,
+      password,
     });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Login failed');
+    
+    if (error) throw new Error(error.message);
+    
+    if (data) {
+      setUser(data.user);
+      setSession(data.session);
+      return data;
     }
-
-    const data = await response.json();
-    localStorage.setItem('token', data.access_token);
-    await fetchUserProfile(data.access_token);
   };
 
   const signup = async (userData) => {
-    const response = await fetch('http://localhost:8000/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData)
+    const { data, error } = await authClient.signUp.email({
+      email: userData.email,
+      password: userData.password,
+      name: userData.name,
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Signup failed');
-    }
+    if (error) throw new Error(error.message);
 
-    const data = await response.json();
-    localStorage.setItem('token', data.access_token);
-    await fetchUserProfile(data.access_token);
+    if (data) {
+      setUser(data.user);
+      setSession(data.session);
+      return data;
+    }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
+  const logout = async () => {
+    await authClient.signOut();
     setUser(null);
+    setSession(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ user, session, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

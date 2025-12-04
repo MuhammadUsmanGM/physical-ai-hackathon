@@ -28,10 +28,11 @@ It features an integrated **RAG (Retrieval-Augmented Generation) Chatbot** that 
 
 ### Backend
 - **API Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Python)
+- **Auth Server**: Node.js with [Better Auth](https://better-auth.com/)
 - **Database**: [Neon Serverless Postgres](https://neon.tech/) (User data & profiles)
 - **Vector Database**: [Qdrant](https://qdrant.tech/) (RAG knowledge base)
 - **AI Model**: Google Gemini 2.0 Flash (via OpenAI-compatible client)
-- **Authentication**: JWT (JSON Web Tokens)
+- **Authentication**: Session-based (Better Auth)
 
 ### Development Tools
 - **AI Assistant**: Claude Code (Anthropic) - Used for systematic development and code generation.
@@ -61,14 +62,22 @@ It features an integrated **RAG (Retrieval-Augmented Generation) Chatbot** that 
    python start_api.py
    ```
 
-3. **Setup Frontend**
+3. **Setup Auth Server**
+   ```bash
+   cd auth-server
+   npm install
+   # Create .env file from .env.example
+   node index.js
+   ```
+
+4. **Setup Frontend**
    ```bash
    cd book
    npm install
    npm start
    ```
 
-4. **Visit the App**
+5. **Visit the App**
    Open [http://localhost:3000](http://localhost:3000) to view the textbook.
 
 ---

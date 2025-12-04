@@ -36,58 +36,41 @@ async def close_db():
     if pool:
         await pool.close()
 
+async def get_session(session_token: str):
+    """Get session by token from Better Auth table"""
+    async with pool.acquire() as conn:
+        # Better Auth uses 'session' table
+        row = await conn.fetchrow(
+            'SELECT * FROM "session" WHERE token = $1',
+            session_token
+        )
+        if row:
+            return dict(row)
+        return None
+
+async def get_user_by_id(user_id: str):
+    """Get user by ID from Better Auth table"""
+    async with pool.acquire() as conn:
+        # Better Auth uses 'user' table
+        row = await conn.fetchrow(
+            'SELECT * FROM "user" WHERE id = $1',
+            user_id
+        )
+        if row:
+            return dict(row)
+        return None
+
+# Legacy functions kept for compatibility but redirected where possible
 async def get_user_by_email(email: str):
-    """Get user by email"""
+    """Get user by email from Better Auth table"""
     async with pool.acquire() as conn:
         row = await conn.fetchrow(
-            'SELECT * FROM users WHERE email = $1',
+            'SELECT * FROM "user" WHERE email = $1',
             email
         )
         if row:
             return dict(row)
         return None
 
-async def create_user(user_data: dict):
-    """Create a new user"""
-    async with pool.acquire() as conn:
-        row = await conn.fetchrow('''
-            INSERT INTO users (email, name, password_hash, programming_languages, hardware_experience, onboarding_completed)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *
-        ''', 
-            user_data['email'],
-            user_data['name'],
-            user_data['password_hash'],
-            user_data.get('programming_languages', {}),
-            user_data.get('hardware_experience', {}),
-            user_data.get('onboarding_completed', False)
-        )
-        return dict(row)
-
-async def update_user(email: str, update_data: dict):
-    """Update user data"""
-    async with pool.acquire() as conn:
-        # Build dynamic update query
-        set_clauses = []
-        values = []
-        param_count = 1
-        
-        for key, value in update_data.items():
-            if key != 'email':  # Don't update email
-                set_clauses.append(f"{key} = ${param_count}")
-                values.append(value)
-                param_count += 1
-        
-        if not set_clauses:
-            return await get_user_by_email(email)
-        
-        values.append(email)
-        query = f'''
-            UPDATE users 
-            SET {', '.join(set_clauses)}
-            WHERE email = ${param_count}
-            RETURNING *
-        '''
-        
-        row = await conn.fetchrow(query, *values)
-        return dict(row) if row else None
+# Note: create_user and update_user are now handled by Node.js Auth Server
+# We only need read access in Python backend
