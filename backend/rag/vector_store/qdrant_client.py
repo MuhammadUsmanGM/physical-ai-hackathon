@@ -27,9 +27,10 @@ class QdrantVectorStore:
     """
     
     def __init__(self, url: str, api_key: str, collection_name: str):
-        self.client = QdrantClient(url=url, api_key=api_key, prefer_grpc=True)
-        self.collection_name = collection_name
-        self.vector_size = 768  # Using embedding size compatible with most models
+        # Disable gRPC to avoid DEADLINE_EXCEEDED errors, use HTTP instead
+        self.client = QdrantClient(url=url, api_key=api_key, prefer_grpc=False)
+        self.collection_name = collection_name + "_local"  # Use a new collection for local embeddings
+        self.vector_size = 384  # Size for all-MiniLM-L6-v2
         
         # Initialize collection if not exists
         self._init_collection()
@@ -91,13 +92,22 @@ class QdrantVectorStore:
             )
             points.append(point)
         
-        # Upload points to Qdrant
-        self.client.upload_points(
-            collection_name=self.collection_name,
-            points=points
-        )
+        # Upload points to Qdrant in batches to avoid timeout
+        batch_size = 10
+        for i in range(0, len(points), batch_size):
+            batch = points[i:i+batch_size]
+            try:
+                self.client.upload_points(
+                    collection_name=self.collection_name,
+                    points=batch,
+                    wait=True
+                )
+                logger.info(f"Uploaded batch {i//batch_size + 1}/{(len(points)-1)//batch_size + 1} ({len(batch)} documents)")
+            except Exception as e:
+                logger.error(f"Error uploading batch: {e}")
+                raise
         
-        logger.info(f"Added {len(points)} documents to collection")
+        logger.info(f"Successfully added {len(points)} documents to collection")
     
     def _mock_embedding(self, text: str) -> List[float]:
         """

@@ -21,7 +21,14 @@ class DocumentLoader:
     """
     
     def __init__(self, documents_dir: str = None):
-        self.documents_dir = documents_dir or "../../book/docs/"
+        if documents_dir is None:
+            # Get the directory of the current file
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            # Go up two levels to reach the root, then into book/docs
+            # backend/rag/ -> backend/ -> root/ -> book/docs
+            self.documents_dir = os.path.join(current_dir, "../../book/docs/")
+        else:
+            self.documents_dir = documents_dir
     
     def load_documents(self) -> List[Dict[str, str]]:
         """

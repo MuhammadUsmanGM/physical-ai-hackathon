@@ -1,118 +1,43 @@
 """
-Embedding generation module for the RAG system
+Embedding generation module for the RAG system using Local Embeddings (Sentence Transformers)
 """
 
 import logging
 from typing import List
-from transformers import AutoTokenizer, AutoModel
-import torch
-import numpy as np
+from sentence_transformers import SentenceTransformer
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-class EmbeddingGenerator:
+class LocalEmbeddingGenerator:
     """
-    Embedding generator using Hugging Face transformer models
+    Embedding generator using local Sentence Transformers model
     """
     
-    def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
+    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
         """
-        Initialize the embedding generator with a transformer model
+        Initialize the embedding generator with a local model
         """
         self.model_name = model_name
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModel.from_pretrained(model_name)
-        
-        # Move model to GPU if available
-        if torch.cuda.is_available():
-            self.model = self.model.cuda()
-        
-        self.model.eval()
-        logger.info(f"Initialized embedding model: {model_name}")
+        logger.info(f"Loading local embedding model: {model_name}...")
+        self.model = SentenceTransformer(model_name)
+        logger.info(f"Initialized local embedding generator: {model_name}")
     
     def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
         """
         Generate embeddings for a list of texts
         """
-        embeddings = []
-        
-        for text in texts:
-            try:
-                embedding = self._generate_single_embedding(text)
-                embeddings.append(embedding)
-            except Exception as e:
-                logger.error(f"Error generating embedding for text: {e}")
-                # Return zero vector in case of error
-                embeddings.append([0.0] * 384)  # Default size for MiniLM
-        
-        return embeddings
-    
-    def _generate_single_embedding(self, text: str) -> List[float]:
-        """
-        Generate embedding for a single text
-        """
-        # Tokenize input text
-        inputs = self.tokenizer(
-            text,
-            return_tensors="pt",
-            padding=True,
-            truncation=True,
-            max_length=512
-        )
-        
-        # Move tensors to GPU if available
-        if torch.cuda.is_available():
-            inputs = {key: val.cuda() for key, val in inputs.items()}
-        
-        # Generate embeddings
-        with torch.no_grad():
-            outputs = self.model(**inputs)
-            # Mean pooling to get the sentence embedding
-            embedding = outputs.last_hidden_state.mean(dim=1).cpu().numpy()
-        
-        # Convert to list and return
-        return embedding.flatten().tolist()
+        try:
+            embeddings = self.model.encode(texts)
+            return embeddings.tolist()
+        except Exception as e:
+            logger.error(f"Error generating embeddings: {e}")
+            # Return zero vectors in case of error (384 dimensions for MiniLM)
+            return [[0.0] * 384 for _ in texts]
 
 
-class MockEmbeddingGenerator:
-    """
-    Mock embedding generator for testing without heavy model loading
-    """
-    
-    def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
-        """
-        Generate mock embeddings for a list of texts
-        """
-        import hashlib
-        
-        embeddings = []
-        for text in texts:
-            # Generate a deterministic hash-based vector
-            hash_obj = hashlib.md5(text.encode())
-            hex_dig = hash_obj.hexdigest()
-            
-            # Convert hex to float values
-            embedding = []
-            for i in range(0, len(hex_dig), 2):
-                hex_pair = hex_dig[i:i+2]
-                val = int(hex_pair, 16) / 255.0  # Normalize to [0, 1]
-                val = val * 2 - 1  # Scale to [-1, 1]
-                embedding.append(val)
-            
-            # Pad to 384 dimensions (common for MiniLM)
-            while len(embedding) < 384:
-                embedding.append(0.0)
-            embedding = embedding[:384]
-            
-            embeddings.append(embedding)
-        
-        return embeddings
-
-
-# Global instance - use mock by default for lightweight operation
-embedding_generator = MockEmbeddingGenerator()
+# Global instance
+embedding_generator = LocalEmbeddingGenerator()
 
 
 def get_embedding_for_text(text: str) -> List[float]:
