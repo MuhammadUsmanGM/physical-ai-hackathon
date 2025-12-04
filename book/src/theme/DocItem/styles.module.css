@@ -1,0 +1,95 @@
+.docItemContainer {
+  position: relative;
+}
+
+.translateButtonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.translateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(16, 185, 129);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.translateBtn:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+  border-color: rgb(16, 185, 129);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.translateBtn:active {
+  transform: translateY(0);
+}
+
+.translateBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.translateBtn.active {
+  background: linear-gradient(135deg, rgb(16, 185, 129), rgb(5, 150, 105));
+  border-color: rgb(16, 185, 129);
+  color: white;
+  box-shadow: 0 2px 12px rgba(16, 185, 129, 0.3);
+}
+
+.icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.text {
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 600;
+}
+
+.spinner {
+  display: inline-block;
+  font-size: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+[data-theme='dark'] .translateButtonWrapper {
+  border-bottom-color: rgba(16, 185, 129, 0.2);
+}
+
+[data-theme='dark'] .translateBtn {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+[data-theme='dark'] .translateBtn:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+  border-color: rgb(16, 185, 129);
+}
+
+[data-theme='dark'] .translateBtn.active {
+  background: linear-gradient(135deg, rgb(16, 185, 129), rgb(5, 150, 105));
+  color: white;
+}
