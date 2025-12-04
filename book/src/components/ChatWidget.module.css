@@ -30,14 +30,14 @@
 
 @keyframes gentleGlow {
   0%, 100% {
-    box-shadow: 
+    box-shadow:
       0 0 20px rgba(16, 185, 129, 0.4),
       0 0 40px rgba(16, 185, 129, 0.2),
       0 0 60px rgba(16, 185, 129, 0.1),
       0 4px 12px rgba(0, 0, 0, 0.08);
   }
   50% {
-    box-shadow: 
+    box-shadow:
       0 0 28px rgba(16, 185, 129, 0.5),
       0 0 50px rgba(16, 185, 129, 0.3),
       0 0 75px rgba(16, 185, 129, 0.15),
@@ -45,9 +45,19 @@
   }
 }
 
+/* Continuous subtle scaling animation for bot icon */
+@keyframes subtleScale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
 .chatButton:hover {
   transform: scale(1.15);
-  box-shadow: 
+  box-shadow:
     0 0 40px rgba(16, 185, 129, 0.6),
     0 0 80px rgba(16, 185, 129, 0.4),
     0 8px 20px rgba(0, 0, 0, 0.15);
@@ -65,6 +75,7 @@
   filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.7));
   position: relative;
   z-index: 2;
+  animation: subtleScale 3s ease-in-out infinite;
 }
 
 .buttonLabel {
