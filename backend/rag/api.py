@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import logging
-from .rag_system import RAGSystem, function_tool
+from .rag_system import RAGSystem
 
 # Initialize app
 app = FastAPI(
@@ -47,13 +47,11 @@ class ToolCall(BaseModel):
 @app.on_event("startup")
 async def startup_event():
     """
-    Load documents into vector store on startup
+    Startup event - documents are already loaded in Qdrant
     """
-    try:
-        rag_system.load_documents_to_vector_store()
-        logging.info("Documents loaded successfully")
-    except Exception as e:
-        logging.error(f"Error loading documents: {e}")
+    logging.info("API server started - using existing Qdrant collection")
+    # Documents are already in Qdrant from the ingestion script
+    # No need to reload them on every startup
 
 @app.get("/")
 async def root():
@@ -68,10 +66,10 @@ async def chat_endpoint(request: QueryRequest):
     Main chat endpoint that processes user queries using the AI agent
     """
     try:
-        from .physical_ai_agent import chat_with_physical_ai_assistant
+        from .physical_ai_agent import chat_with_physical_ai_assistant_async
         
-        # Use the agent to process the query
-        response = chat_with_physical_ai_assistant(request.query)
+        # Use the async agent to process the query
+        response = await chat_with_physical_ai_assistant_async(request.query)
         
         return ChatResponse(response=response)
     

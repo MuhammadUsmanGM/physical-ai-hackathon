@@ -68,6 +68,13 @@ async def run_agent_async(user_query: str):
     result = await Runner.run(agent, user_query)
     return result.final_output
 
+
+async def chat_with_physical_ai_assistant_async(user_query: str):
+    """
+    Chat with the Physical AI assistant (Async version for FastAPI)
+    """
+    return await run_agent_async(user_query)
+
 def chat_with_physical_ai_assistant(user_query: str):
     """
     Chat with the Physical AI assistant (Synchronous wrapper)
