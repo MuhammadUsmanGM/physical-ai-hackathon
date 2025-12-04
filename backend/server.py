@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from auth.routes import router as auth_router
+from rag.routes import router as rag_router
 from auth.db import init_db, close_db
 
 @asynccontextmanager
@@ -19,7 +20,7 @@ app = FastAPI(lifespan=lifespan)
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,6 +28,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth_router)
+app.include_router(rag_router)
 
 @app.get("/")
 async def root():
