@@ -15,8 +15,6 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [softwareBg, setSoftwareBg] = useState('beginner');
-  const [hardwareBg, setHardwareBg] = useState('beginner');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,16 +24,15 @@ export default function Auth() {
     try {
       if (isLogin) {
         await login(email, password);
+        history.push('/');
       } else {
         await signup({
           email,
           password,
-          name,
-          software_background: softwareBg,
-          hardware_background: hardwareBg
+          name
         });
+        history.push('/onboarding');
       }
-      history.push('/');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -90,28 +87,6 @@ export default function Auth() {
                 placeholder="••••••••"
               />
             </div>
-
-            {!isLogin && (
-              <>
-                <div className={styles.formGroup}>
-                  <label>Software Experience</label>
-                  <select value={softwareBg} onChange={(e) => setSoftwareBg(e.target.value)}>
-                    <option value="beginner">Beginner (New to coding)</option>
-                    <option value="intermediate">Intermediate (Familiar with Python/C++)</option>
-                    <option value="advanced">Advanced (Professional Developer)</option>
-                  </select>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label>Hardware/Robotics Experience</label>
-                  <select value={hardwareBg} onChange={(e) => setHardwareBg(e.target.value)}>
-                    <option value="beginner">Beginner (No hardware exp)</option>
-                    <option value="intermediate">Intermediate (Arduino/Raspberry Pi)</option>
-                    <option value="advanced">Advanced (ROS/Industrial Robots)</option>
-                  </select>
-                </div>
-              </>
-            )}
 
             <button type="submit" className={styles.submitButton} disabled={loading}>
               {loading ? 'Processing...' : (isLogin ? 'Login' : 'Create Account')}

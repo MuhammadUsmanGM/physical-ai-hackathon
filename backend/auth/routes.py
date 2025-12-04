@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from datetime import timedelta
-from .models import UserCreate, UserLogin, Token, User, UserInDB
-from .db import get_user_by_email, create_user
+from datetime import timedelta, datetime
+from .models import UserCreate, UserLogin, Token, User, UserInDB, OnboardingData
+from .db import get_user_by_email, create_user, update_user
 from .utils import verify_password, get_password_hash, create_access_token, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -36,8 +36,10 @@ async def signup(user: UserCreate):
     
     hashed_password = get_password_hash(user.password)
     user_in_db = UserInDB(
-        **user.dict(exclude={"password"}),
-        hashed_password=hashed_password
+        email=user.email,
+        name=user.name,
+        hashed_password=hashed_password,
+        onboarding_completed=False
     )
     
     await create_user(user_in_db.dict())
@@ -67,3 +69,20 @@ async def login(user_credentials: UserLogin):
 @router.get("/me", response_model=User)
 async def read_users_me(current_user: dict = Depends(get_current_user)):
     return current_user
+
+@router.post("/onboarding")
+async def complete_onboarding(
+    onboarding_data: OnboardingData,
+    current_user: dict = Depends(get_current_user)
+):
+    """Complete user onboarding with programming languages and hardware experience"""
+    update_data = {
+        "programming_languages": onboarding_data.programming_languages,
+        "hardware_experience": onboarding_data.hardware_experience,
+        "onboarding_completed": True,
+        "updated_at": datetime.utcnow()
+    }
+    
+    await update_user(current_user["email"], update_data)
+    
+    return {"message": "Onboarding completed successfully"}

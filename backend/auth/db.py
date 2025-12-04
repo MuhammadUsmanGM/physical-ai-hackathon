@@ -19,3 +19,11 @@ async def create_user(user_data: dict):
     result = await users_collection.insert_one(user_data)
     user_data["id"] = str(result.inserted_id)
     return user_data
+
+async def update_user(email: str, update_data: dict):
+    """Update user data by email"""
+    result = await users_collection.update_one(
+        {"email": email},
+        {"$set": update_data}
+    )
+    return result.modified_count > 0
