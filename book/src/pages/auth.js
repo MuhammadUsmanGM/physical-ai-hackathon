@@ -16,6 +16,37 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
 
+  // Password visibility toggle
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(''); // 'weak', 'moderate', 'strong'
+
+  // Password strength checker function
+  const checkPasswordStrength = (password) => {
+    if (password.length === 0) return '';
+
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+    if (strength >= 4) return 'strong';
+    if (strength >= 2) return 'moderate';
+    return 'weak';
+  };
+
+  // Handle password change for strength indicator
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    // Update password strength when on signup page
+    if (!isLogin) {
+      setPasswordStrength(checkPasswordStrength(newPassword));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -38,6 +69,14 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Get icon color based on password strength
+  const getIconColor = () => {
+    if (passwordStrength === 'strong') return '#10B981'; // Green
+    if (passwordStrength === 'moderate') return '#F59E0B'; // Yellow
+    if (passwordStrength === 'weak') return '#EF4444'; // Red
+    return '#9CA3AF'; // Default gray
   };
 
   return (
@@ -79,13 +118,37 @@ export default function Auth() {
 
             <div className={styles.formGroup}>
               <label>Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-              />
+              <div className={styles.passwordContainer}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={handlePasswordChange}
+                  required
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  className={styles.eyeButton}
+                  style={{ color: isLogin ? '#9CA3AF' : getIconColor() }}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    // Eye icon (closed)
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M12 10v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M10 12h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  ) : (
+                    // Eye icon (open)
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
 
             <button type="submit" className={styles.submitButton} disabled={loading}>
