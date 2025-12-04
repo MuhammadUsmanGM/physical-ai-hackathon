@@ -93,7 +93,7 @@ export default function Onboarding() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/auth/onboarding', {
+      const response = await fetch('https://physical-ai-hackathon-production.up.railway.app/auth/onboarding', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

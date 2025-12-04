@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './ChatWidget.module.css';
 import { useAuth } from '../contexts/AuthContext';
 import { useHistory } from '@docusaurus/router';
@@ -54,7 +55,7 @@ export default function ChatWidget() {
         requestBody.context = contextText;
       }
       
-      const response = await fetch('http://localhost:8000/chat', {
+      const response = await fetch('https://physical-ai-hackathon-production.up.railway.app/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -107,7 +108,7 @@ export default function ChatWidget() {
         onClick={handleOpenChat}
         aria-label="Chat with AI Assistant"
       >
-        <img src="/img/bot.png" alt="AI Assistant" className={styles.botIcon} />
+        <img src={useBaseUrl('/img/bot.png')} alt="AI Assistant" className={styles.botIcon} />
         {showLabel && !isOpen && (
           <span className={styles.buttonLabel}>
             <span className={styles.labelEmoji}>💡</span>
@@ -130,7 +131,7 @@ export default function ChatWidget() {
       <div className={`${styles.chatPanel} ${isOpen ? styles.open : ''}`}>
         <div className={styles.chatHeader}>
           <div className={styles.headerContent}>
-            <img src="/img/bot.png" alt="AI" className={styles.headerIcon} />
+            <img src={useBaseUrl('/img/bot.png')} alt="AI" className={styles.headerIcon} />
             <div>
               <h3>Physical AI Assistant</h3>
               <p>Your guide to robotics</p>
