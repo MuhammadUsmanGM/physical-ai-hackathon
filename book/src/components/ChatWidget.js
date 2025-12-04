@@ -126,7 +126,11 @@ export default function ChatWidget() {
 
         {!user ? (
           <div className={styles.authPrompt}>
-            <p>Please login to chat with the AI assistant.</p>
+            <div className={styles.authIconWrapper}>
+              <span className={styles.authIcon}>🔒</span>
+            </div>
+            <h4>Unlock AI Assistant</h4>
+            <p>Sign in to chat with the Physical AI assistant and get personalized help.</p>
             <button 
               className={styles.loginButton}
               onClick={() => {

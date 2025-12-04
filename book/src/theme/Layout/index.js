@@ -5,9 +5,9 @@ import { AuthProvider } from '@site/src/contexts/AuthContext';
 
 export default function LayoutWrapper(props) {
   return (
-    <AuthProvider>
+    <>
       <Layout {...props} />
       <ChatWidget />
-    </AuthProvider>
+    </>
   );
 }
