@@ -11,7 +11,8 @@
       "SlashCommand(/sp.phr --title \"Add frontmatter + ids to each doc and update sidebars.js\" --stage \"spec\" --feature \"book-chapters-outline\")",
       "Bash(python:*)",
       "Bash(.venv\\Scripts\\activate:*)",
-      "SlashCommand(/sp.phr --title \"Create virtualenv and FastAPI RAG app\" --stage \"green\" --feature \"backend-rag-app\")"
+      "SlashCommand(/sp.phr --title \"Create virtualenv and FastAPI RAG app\" --stage \"green\" --feature \"backend-rag-app\")",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

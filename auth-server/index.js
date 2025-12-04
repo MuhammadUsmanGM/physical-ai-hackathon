@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const { betterAuth } = require('better-auth');
 const { Pool } = require('pg');
 require('dotenv').config();
@@ -14,14 +15,15 @@ const pool = new Pool({
   }
 });
 
-// Initialize Better Auth
+// Initialize Better Auth with proper origin configuration for development
 const auth = betterAuth({
   database: pool,
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:4000',
   emailAndPassword: {
     enabled: true
   },
+  trustedOrigins: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000'],
   // Auto-migrate database schema
   databaseHooks: {
     onInit: async (ctx) => {
@@ -30,15 +32,28 @@ const auth = betterAuth({
   }
 });
 
+// CORS Middleware - MUST come before routes
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 // Middleware
 app.use(express.json());
 
 const { toNodeHandler } = require('better-auth/node');
 
-// ...
-
 // Mount Better Auth API
-app.all('/api/auth/*', toNodeHandler(auth));
+app.all('/api/auth/*', (req, res) => {
+
+  toNodeHandler(auth)(req, res);
+});
+
+// Handle preflight requests specifically
+app.options('/api/auth/*', (req, res) => {
+});
 
 // Health check
 app.get('/health', (req, res) => {
