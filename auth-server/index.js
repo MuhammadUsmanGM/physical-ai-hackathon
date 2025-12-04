@@ -33,8 +33,12 @@ const auth = betterAuth({
 // Middleware
 app.use(express.json());
 
+const { toNodeHandler } = require('better-auth/node');
+
+// ...
+
 // Mount Better Auth API
-app.all('/api/auth/*', auth.handler);
+app.all('/api/auth/*', toNodeHandler(auth));
 
 // Health check
 app.get('/health', (req, res) => {
