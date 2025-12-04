@@ -1,0 +1,157 @@
+.authContainer {
+  min_height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05), transparent);
+  padding: 40px 20px;
+}
+
+.authCard {
+  width: 100%;
+  max-width: 450px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.1),
+    0 0 20px rgba(16, 185, 129, 0.1);
+}
+
+[data-theme='dark'] .authCard {
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.authHeader {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.4));
+}
+
+.authHeader h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, rgb(16, 185, 129), rgb(5, 150, 105));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.authHeader p {
+  color: var(--ifm-color-emphasis-600);
+  font-size: 15px;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ifm-font-color-base);
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 15px;
+  transition: all 0.2s ease;
+  color: var(--ifm-font-color-base);
+}
+
+[data-theme='dark'] .formGroup input,
+[data-theme='dark'] .formGroup select {
+  background: rgba(17, 24, 39, 0.5);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: rgb(16, 185, 129);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme='dark'] .formGroup input:focus,
+[data-theme='dark'] .formGroup select:focus {
+  background: rgba(17, 24, 39, 0.8);
+}
+
+.submitButton {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, rgb(16, 185, 129), rgb(5, 150, 105));
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.authFooter {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  color: rgb(16, 185, 129);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 14px;
+}
+
+.toggleButton:hover {
+  text-decoration: underline;
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: rgb(239, 68, 68);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}

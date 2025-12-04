@@ -101,6 +101,12 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
+          {
+            to: '/auth',
+            label: 'Get Started',
+            position: 'right',
+            className: 'auth-nav-link',
+          },
         ],
       },
       footer: {

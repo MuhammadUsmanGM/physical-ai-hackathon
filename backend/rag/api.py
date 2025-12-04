@@ -9,12 +9,17 @@ from typing import List, Optional
 import logging
 from .rag_system import RAGSystem
 
+from auth.routes import router as auth_router
+
 # Initialize app
 app = FastAPI(
     title="Physical AI & Humanoid Robotics RAG API",
     description="Retrieval-Augmented Generation API for Physical AI textbook",
     version="1.0.0"
 )
+
+# Include Auth Router
+app.include_router(auth_router)
 
 # Add CORS middleware
 app.add_middleware(

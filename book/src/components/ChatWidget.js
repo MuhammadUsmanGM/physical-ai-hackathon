@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './ChatWidget.module.css';
+import { useAuth } from '../contexts/AuthContext';
+import { useHistory } from '@docusaurus/router';
 
 export default function ChatWidget() {
+  const { user, loading } = useAuth();
+  const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
   const [showLabel, setShowLabel] = useState(true);
   const [messages, setMessages] = useState([
@@ -60,6 +64,7 @@ export default function ChatWidget() {
 
   const handleOpenChat = () => {
     setIsOpen(true);
+    setShowLabel(false);
   };
 
   const handleCloseChat = () => {
@@ -69,6 +74,9 @@ export default function ChatWidget() {
       setShowLabel(true);
     }
   };
+
+  // If loading auth state, don't show anything yet
+  if (loading) return null;
 
   return (
     <>
@@ -116,54 +124,71 @@ export default function ChatWidget() {
           </button>
         </div>
 
-        <div className={styles.chatMessages}>
-          {messages.map((msg, idx) => (
-            <div 
-              key={idx} 
-              className={`${styles.message} ${styles[msg.role]}`}
+        {!user ? (
+          <div className={styles.authPrompt}>
+            <p>Please login to chat with the AI assistant.</p>
+            <button 
+              className={styles.loginButton}
+              onClick={() => {
+                setIsOpen(false);
+                history.push('/auth');
+              }}
             >
-              <div className={styles.messageContent}>
-                {msg.content}
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className={`${styles.message} ${styles.assistant}`}>
-              <div className={styles.messageContent}>
-                <div className={styles.typingIndicator}>
-                  <span></span>
-                  <span></span>
-                  <span></span>
+              Login / Sign Up
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className={styles.chatMessages}>
+              {messages.map((msg, idx) => (
+                <div 
+                  key={idx} 
+                  className={`${styles.message} ${styles[msg.role]}`}
+                >
+                  <div className={styles.messageContent}>
+                    {msg.content}
+                  </div>
                 </div>
-              </div>
+              ))}
+              {isLoading && (
+                <div className={`${styles.message} ${styles.assistant}`}>
+                  <div className={styles.messageContent}>
+                    <div className={styles.typingIndicator}>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
 
-        <div className={styles.chatInput}>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Ask about ROS 2, Gazebo, Isaac..."
-            rows="1"
-            disabled={isLoading}
-          />
-          <button 
-            onClick={handleSend}
-            disabled={!input.trim() || isLoading}
-            className={styles.sendButton}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        </div>
+            <div className={styles.chatInput}>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask about ROS 2, Gazebo, Isaac..."
+                rows="1"
+                disabled={isLoading}
+              />
+              <button 
+                onClick={handleSend}
+                disabled={!input.trim() || isLoading}
+                className={styles.sendButton}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Overlay */}
-      {isOpen && <div className={styles.overlay} onClick={() => setIsOpen(false)} />}
+      {isOpen && <div className={styles.overlay} onClick={handleCloseChat} />}
     </>
   );
 }
