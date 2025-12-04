@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './ChatWidget.module.css';
 import { useAuth } from '../contexts/AuthContext';
 import { useHistory } from '@docusaurus/router';
+import TextSelectionHandler from './TextSelectionHandler';
 
 export default function ChatWidget() {
   const { user, loading } = useAuth();
@@ -16,6 +17,7 @@ export default function ChatWidget() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedText, setSelectedText] = useState('');
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -26,21 +28,38 @@ export default function ChatWidget() {
     scrollToBottom();
   }, [messages]);
 
+  const handleTextSelected = (text) => {
+    setSelectedText(text);
+    setIsOpen(true);
+    setMessages(prev => [...prev, {
+      role: 'system',
+      content: `📌 Selected: "${text.substring(0, 150)}${text.length > 150 ? '...' : ''}"`
+    }]);
+  };
+
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage = input.trim();
+    const contextText = selectedText;
     setInput('');
+    setSelectedText(''); // Clear after sending
+    
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
     try {
+      const requestBody = { query: userMessage };
+      if (contextText) {
+        requestBody.context = contextText;
+      }
+      
       const response = await fetch('http://localhost:8000/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ query: userMessage }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -80,6 +99,8 @@ export default function ChatWidget() {
 
   return (
     <>
+      <TextSelectionHandler onTextSelected={handleTextSelected} />
+      
       {/* Floating Chat Button */}
       <button
         className={styles.chatButton}
