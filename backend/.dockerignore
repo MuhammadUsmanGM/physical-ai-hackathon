@@ -35,13 +35,3 @@ Thumbs.db
 .coverage
 htmlcov/
 
-# Documentation
-*.md
-!README.md
-
-# Other project folders (IMPORTANT - exclude other services)
-../book/
-../auth-server/
-../specs/
-../.claude/
-../.specify/
