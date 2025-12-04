@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+qdrant-client
+python-dotenv
+google-generativeai
+openai
+openai-agents==0.1.0
+sentence-transformers==2.2.2
+beautifulsoup4
+PyYAML
+markdown
+requests
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+email-validator
+asyncpg==0.31.0
