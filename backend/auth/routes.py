@@ -35,14 +35,14 @@ async def signup(user: UserCreate):
         raise HTTPException(status_code=400, detail="Email already registered")
     
     hashed_password = get_password_hash(user.password)
-    user_in_db = UserInDB(
-        email=user.email,
-        name=user.name,
-        hashed_password=hashed_password,
-        onboarding_completed=False
-    )
+    user_data = {
+        "email": user.email,
+        "name": user.name,
+        "password_hash": hashed_password,
+        "onboarding_completed": False
+    }
     
-    await create_user(user_in_db.dict())
+    await create_user(user_data)
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -53,7 +53,7 @@ async def signup(user: UserCreate):
 @router.post("/login", response_model=Token)
 async def login(user_credentials: UserLogin):
     user = await get_user_by_email(user_credentials.email)
-    if not user or not verify_password(user_credentials.password, user["hashed_password"]):
+    if not user or not verify_password(user_credentials.password, user["password_hash"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
