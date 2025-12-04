@@ -188,6 +188,26 @@
   transform: translateY(20px) scale(0.95);
   pointer-events: none;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* Blurred logo background */
+.chatPanel::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  background-image: url('/img/logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.1;
+  filter: blur(3px);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .chatPanel.open {
@@ -201,6 +221,10 @@
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+[data-theme='dark'] .chatPanel::before {
+  opacity: 0.06;
+}
+
 .chatHeader {
   padding: 18px 20px;
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(5, 150, 105, 0.08));
@@ -209,6 +233,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .headerContent {
@@ -267,6 +293,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
+  z-index: 1;
 }
 
 .message {
@@ -361,6 +389,8 @@
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
   border-radius: 0 0 20px 20px;
+  position: relative;
+  z-index: 1;
 }
 
 [data-theme='dark'] .chatInput {
