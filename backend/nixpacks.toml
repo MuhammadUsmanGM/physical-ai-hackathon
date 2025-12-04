@@ -2,7 +2,10 @@
 nixPkgs = ["python311", "python311Packages.pip"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt"]
+cmds = [
+    "pip install torch --index-url https://download.pytorch.org/whl/cpu",
+    "pip install -r requirements.txt"
+]
 
 [phases.build]
 cmds = []
