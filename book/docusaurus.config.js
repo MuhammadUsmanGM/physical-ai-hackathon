@@ -88,24 +88,21 @@ const config = {
         logo: {
           alt: 'Physical AI Logo',
           src: 'img/logo.png',
+          width: 32,
+          height: 32,
         },
         items: [
-          {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
-            position: 'left',
-            label: 'Course Content',
-          },
           {
             href: 'https://github.com/MuhammadUsmanGM/physical-ai-hackathon',
             label: 'GitHub',
             position: 'right',
+            className: 'header-github-link navbar-item-spacing',
           },
           {
             to: '/auth',
             label: 'Get Started',
             position: 'right',
-            className: 'auth-nav-link',
+            className: 'auth-nav-link navbar-item-spacing',
           },
         ],
       },
@@ -144,7 +141,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Physical AI & Humanoid Robotics Course. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Physical AI & Humanoid Robotics Course`,
       },
       prism: {
         theme: prismThemes.github,

@@ -78,11 +78,49 @@ body {
   box-shadow: none;
 }
 
+.navbar__inner {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__items {
+  gap: 0.5rem; /* Spacing between navbar items */
+}
+
+.navbar__item {
+  margin: 0 0.25rem; /* Space around each item */
+}
+
+.navbar__item.navbar-item-spacing {
+  margin: 0 0.75rem; /* Increased spacing for right-side items */
+}
+
 .navbar__title {
   font-weight: 800;
-  background: linear-gradient(135deg, var(--ifm-color-primary), var(--color-accent-cyan));
+  font-size: 1.7rem;
+  background: linear-gradient(135deg, var(--ifm-color-primary), var(--color-accent-cyan), var(--color-accent-blue));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin-left: 0.5rem; /* Space between logo and title */
+  transition: all 0.3s ease;
+  text-shadow: 0 0 8px rgba(0, 230, 118, 0.2);
+  letter-spacing: 0.5px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.navbar__title:hover {
+  transform: scale(1.05);
+  text-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+}
+
+.navbar__logo {
+  height: 32px;
+  width: 32px;
+  transition: transform 0.3s ease;
+}
+
+.navbar__logo:hover {
+  transform: scale(1.1) rotate(5deg);
 }
 
 /* Hero Section - Cyberpunk/Futuristic Style */
