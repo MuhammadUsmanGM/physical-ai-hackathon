@@ -60,7 +60,14 @@ export default function ChatWidget() {
 
   const handleOpenChat = () => {
     setIsOpen(true);
-    setShowLabel(false);
+  };
+
+  const handleCloseChat = () => {
+    setIsOpen(false);
+    // Show label again when chat closes (unless user manually closed it)
+    if (showLabel !== false) {
+      setShowLabel(true);
+    }
   };
 
   return (
@@ -102,7 +109,7 @@ export default function ChatWidget() {
           </div>
           <button 
             className={styles.closeButton}
-            onClick={() => setIsOpen(false)}
+            onClick={handleCloseChat}
             aria-label="Close chat"
           >
             ✕
