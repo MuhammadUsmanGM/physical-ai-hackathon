@@ -65,14 +65,14 @@ body {
   background-color: var(--ifm-background-color);
 }
 
-/* Enhanced Mechanical Grid Pattern */
+/* Enhanced Mechanical Grid Pattern - only on homepage */
 .mechanical-bg {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: -2;
   background:
     linear-gradient(90deg, var(--ifm-color-primary) 2px, transparent 2px),
     linear-gradient(var(--ifm-color-primary) 2px, transparent 2px),
@@ -92,8 +92,19 @@ body {
     25px 25px,
     25px 25px,
     0 0;
-  animation: gridMove 40s linear infinite;
+  animation: gridMove 60s linear infinite alternate;
   pointer-events: none;
+  transform: translateZ(0); /* Enable hardware acceleration for smoother animation */
+}
+
+/* Hide mechanical background on docs pages */
+html:not(.home) .mechanical-bg {
+  display: none;
+}
+
+/* For docs pages, ensure simple background */
+html:not(.home) body {
+  background-color: var(--ifm-background-color) !important;
 }
 
 @keyframes gridMove {
@@ -173,69 +184,56 @@ body {
 }
 
 /* Dynamic Cyber Grid Background */
+/* Enhanced Hero Banner with better structure */
+.heroBanner {
+  padding: 10rem 0 8rem;
+  position: relative;
+  overflow: visible; /* Allow pattern to show through */
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1; /* Ensure content appears above background */
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Add decorative tech elements to hero */
 .heroBanner::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background-image: 
-    linear-gradient(rgba(0, 230, 118, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 230, 118, 0.05) 1px, transparent 1px);
-  background-size: 50px 50px;
-  transform: perspective(500px) rotateX(60deg);
-  animation: moveGrid 20s linear infinite;
-  z-index: -2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(0, 230, 118, 0.05) 0%, transparent 15%),
+    radial-gradient(circle at 90% 80%, rgba(41, 121, 255, 0.05) 0%, transparent 15%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* Glowing Orb Background */
-.heroBanner::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0, 230, 118, 0.15) 0%, rgba(41, 121, 255, 0.05) 50%, transparent 70%);
-  filter: blur(60px);
-  z-index: -1;
-  animation: pulseOrb 8s ease-in-out infinite;
-}
-
-@keyframes moveGrid {
-  0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
-  100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
-}
-
-@keyframes pulseOrb {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
-}
-
-/* Hero Title - Fixed for Light Mode */
+/* Enhanced hero title with better styling */
 .hero__title {
   font-size: 5rem;
   line-height: 1.1;
   font-weight: 900;
   margin-bottom: 1.5rem;
-  /* Default (Dark Mode) Gradient */
   background: linear-gradient(to right, #ffffff 20%, var(--ifm-color-primary-light) 40%, var(--ifm-color-primary) 60%, #ffffff 80%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: shineText 5s linear infinite;
-  /* Removed text-shadow to fix blurriness on transparent text */
   filter: drop-shadow(0 0 15px rgba(0, 230, 118, 0.3));
   letter-spacing: -1px;
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  text-align: center;
+  max-width: 900px;
 }
 
 [data-theme='light'] .hero__title {
-  /* Light Mode Gradient - Using Dark Greens/Blacks for visibility */
   background: linear-gradient(to right, #1a1a1a 20%, var(--ifm-color-primary-dark) 40%, var(--ifm-color-primary-darker) 60%, #1a1a1a 80%);
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -258,12 +256,24 @@ body {
   color: var(--ifm-color-primary-lightest);
   text-shadow: 0 2px 10px rgba(0,0,0,0.2);
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  text-align: center;
 }
 
 [data-theme='light'] .hero__subtitle {
   color: var(--ifm-color-dark);
   font-weight: 600;
+}
+
+/* Enhanced buttons container with better spacing */
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  z-index: 2;
+  position: relative;
 }
 
 /* Advanced Button Styling with Moving Border */
@@ -364,7 +374,7 @@ body {
   height: 100%;
   position: relative;
   overflow: hidden;
-  box-shadow: 
+  box-shadow:
     0 8px 32px 0 rgba(0, 230, 118, 0.1),
     inset 0 0 0 1px rgba(0, 230, 118, 0.05);
 }
@@ -378,12 +388,12 @@ body {
   width: 200%;
   height: 100%;
   background: linear-gradient(
-    115deg, 
-    transparent 0%, 
-    transparent 40%, 
-    rgba(0, 230, 118, 0.2) 45%, 
-    rgba(0, 230, 118, 0.1) 50%, 
-    transparent 55%, 
+    115deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(0, 230, 118, 0.2) 45%,
+    rgba(0, 230, 118, 0.1) 50%,
+    transparent 55%,
     transparent 100%
   );
   transform: skewX(-20deg);
@@ -393,7 +403,7 @@ body {
 
 .card:hover {
   transform: translateY(-10px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 230, 118, 0.25),
     0 0 0 2px var(--ifm-color-primary);
   border-color: var(--ifm-color-primary);
@@ -403,6 +413,26 @@ body {
 .card:hover::before {
   left: 100%;
   transition: 0.7s;
+}
+
+/* Enhanced card content styling for better visual hierarchy */
+.card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--ifm-color-primary), var(--color-accent-cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(0, 230, 118, 0.2));
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.card p {
+  color: var(--ifm-font-color-base);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
 }
 
 /* Dark Mode Adjustments for Green Glass */
@@ -435,6 +465,31 @@ body {
 .featuresSection {
   padding: 6rem 0;
   position: relative;
+  background: var(--ifm-background-surface-color);
+  margin: 4rem 0;
+  border-radius: 2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.featuresSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(90deg, transparent 49%, rgba(0, 230, 118, 0.03) 49%, rgba(0, 230, 118, 0.03) 51%, transparent 51%),
+    linear-gradient(transparent 49%, rgba(0, 230, 118, 0.03) 49%, rgba(0, 230, 118, 0.03) 51%, transparent 51%);
+  background-size: 40px 40px;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+.featuresSection > .container {
+  position: relative;
+  z-index: 1;
 }
 
 .feature-icon {
@@ -448,12 +503,15 @@ body {
   justify-content: center;
   border-radius: 20px;
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .card:hover .feature-icon {
   background: var(--ifm-color-primary);
   color: white;
-  transform: rotate(5deg);
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0 10px 25px rgba(0, 230, 118, 0.4);
 }
 
 /* Course Modules Grid */
@@ -462,18 +520,54 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 3rem;
+  position: relative;
 }
 
 .module-card {
   text-align: left;
   cursor: pointer;
   text-decoration: none !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.module-card:hover {
+  transform: translateY(-10px);
+  box-shadow:
+    0 20px 40px rgba(0, 230, 118, 0.25),
+    0 0 0 2px var(--ifm-color-primary);
 }
 
 .module-card h3 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* Enhanced module cards with tech-inspired styling */
+.module-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(0, 230, 118, 0.1) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 400% 400%;
+  z-index: -1;
+  transition: background-position 0.5s ease;
+}
+
+.module-card:hover::before {
+  background-position: 100% 100%;
 }
 
 /* Footer - Dull Dark in Both Themes */
@@ -502,12 +596,38 @@ body {
   100% { transform: translateY(0px); }
 }
 
-.floating {
-  animation: float 6s ease-in-out infinite;
+/* Enhanced floating animation for more prominence */
+@keyframes floatEnhanced {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    filter: drop-shadow(0 5px 15px rgba(0, 230, 118, 0.1));
+  }
+  25% {
+    transform: translateY(-8px) rotate(0.5deg);
+    filter: drop-shadow(0 10px 20px rgba(0, 230, 118, 0.15));
+  }
+  50% {
+    transform: translateY(-12px) rotate(0deg);
+    filter: drop-shadow(0 15px 25px rgba(0, 230, 118, 0.2));
+  }
+  75% {
+    transform: translateY(-8px) rotate(-0.5deg);
+    filter: drop-shadow(0 10px 20px rgba(0, 230, 118, 0.15));
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+    filter: drop-shadow(0 5px 15px rgba(0, 230, 118, 0.1));
+  }
 }
 
-.delay-1 { animation-delay: 1s; }
-.delay-2 { animation-delay: 2s; }
+.floating {
+  animation: floatEnhanced 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.delay-1 { animation-delay: 0.5s; }
+.delay-2 { animation-delay: 1s; }
+.delay-3 { animation-delay: 1.5s; }
 
 /* Markdown Content Styling */
 .markdown h1 {
