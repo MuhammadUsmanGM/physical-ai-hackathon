@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useHistory } from '@docusaurus/router';
 
 const AuthContext = createContext(null);
 
@@ -9,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
+  const history = useHistory();
 
   useEffect(() => {
     // Check for token in local storage on mount
@@ -101,6 +103,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('auth_token');
     setToken(null);
     setUser(null);
+    history.push('/logout');
   };
 
   return (

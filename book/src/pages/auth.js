@@ -50,9 +50,12 @@ export default function Auth() {
     }
   };
 
+  const [successMsg, setSuccessMsg] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMsg('');
     setLoading(true);
 
     try {
@@ -65,7 +68,10 @@ export default function Auth() {
           password,
           name
         });
-        history.push('/onboarding');
+        // Instead of redirecting, show success and switch to login
+        setSuccessMsg('Signup successful! Please login with your new account.');
+        setIsLogin(true);
+        setPassword(''); // Clear password for security
       }
     } catch (err) {
       setError(err.message);
@@ -93,6 +99,7 @@ export default function Auth() {
           </div>
 
           {error && <div className={styles.error}>{error}</div>}
+          {successMsg && <div className="alert alert--success margin-bottom--md">{successMsg}</div>}
 
           <form onSubmit={handleSubmit} className={styles.authForm}>
             {!isLogin && (
