@@ -68,6 +68,9 @@ app.use((req, res, next) => {
 // SIGNUP
 app.post('/api/auth/signup', async (req, res) => {
   try {
+    // Ensure table exists (serverless cold start safety)
+    await ensureTableExists();
+
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -102,8 +105,12 @@ app.post('/api/auth/signup', async (req, res) => {
     res.json({ user, token });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error during signup' });
+    console.error('Signup Error:', err);
+    res.status(500).json({ 
+      error: 'Server error during signup', 
+      details: err.message, // Expose error for debugging
+      code: err.code // Expose Postgres error code
+    });
   }
 });
 
