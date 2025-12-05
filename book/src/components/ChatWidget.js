@@ -160,7 +160,8 @@ export default function ChatWidget() {
               className={styles.loginButton}
               onClick={() => {
                 setIsOpen(false);
-                history.push('/auth');
+                // history.push('/auth');
+                window.location.href = '/physical-ai-hackathon/auth'; // Force correct path for GitHub Pages
               }}
             >
               Login / Sign Up
