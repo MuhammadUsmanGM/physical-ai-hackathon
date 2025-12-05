@@ -106,13 +106,13 @@ export default function Auth() {
         await login(email.trim(), password);
         history.push(useBaseUrl('/'));
       } else {
-        // CRITICAL FIX: Redirect to home after signup instead of switching to login
+        // Redirect to onboarding after signup to collect user experience
         await signup({
           email: email.trim(),
           password,
           name: name.trim()
         });
-        history.push(useBaseUrl('/'));
+        history.push(useBaseUrl('/onboarding'));
       }
     } catch (err) {
       // Improved error messages

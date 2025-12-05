@@ -48,7 +48,14 @@ const ensureTableExists = async () => {
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(255);`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(255);`);
 
-    // 4. Fix "password_hash" not-null constraint (Legacy column support)
+    // 4. Add onboarding-related columns
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT FALSE;`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS software_experience JSONB;`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS hardware_experience JSONB;`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS experience_level VARCHAR(50);`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS areas_of_interest TEXT[];`);
+
+    // 5. Fix "password_hash" not-null constraint (Legacy column support)
     const legacyColumns = ['password_hash', 'emailVerified', 'image', 'updatedAt'];
     
     for (const col of legacyColumns) {
@@ -189,7 +196,10 @@ app.get('/api/auth/me', async (req, res) => {
 
     const decoded = jwt.verify(token, process.env.BETTER_AUTH_SECRET || 'fallback_secret');
     
-    const result = await pool.query('SELECT id, name, email, created_at FROM users WHERE id = $1', [decoded.id]);
+    const result = await pool.query(
+      'SELECT id, name, email, created_at, onboarding_completed, software_experience, hardware_experience, experience_level, areas_of_interest FROM users WHERE id = $1', 
+      [decoded.id]
+    );
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
@@ -203,6 +213,63 @@ app.get('/api/auth/me', async (req, res) => {
   }
 });
 
+// COMPLETE ONBOARDING
+app.post('/api/auth/onboarding', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.BETTER_AUTH_SECRET || 'fallback_secret');
+
+    const { 
+      software_experience, 
+      hardware_experience, 
+      experience_level, 
+      areas_of_interest 
+    } = req.body;
+
+    // Validate required fields
+    if (!experience_level) {
+      return res.status(400).json({ error: 'Experience level is required' });
+    }
+
+    // Update user with onboarding data
+    const result = await pool.query(
+      `UPDATE users 
+       SET onboarding_completed = TRUE,
+           software_experience = $1,
+           hardware_experience = $2,
+           experience_level = $3,
+           areas_of_interest = $4
+       WHERE id = $5
+       RETURNING id, name, email, created_at, onboarding_completed, software_experience, hardware_experience, experience_level, areas_of_interest`,
+      [
+        JSON.stringify(software_experience || {}),
+        JSON.stringify(hardware_experience || {}),
+        experience_level,
+        areas_of_interest || [],
+        decoded.id
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ 
+      message: 'Onboarding completed successfully',
+      user: result.rows[0] 
+    });
+
+  } catch (err) {
+    console.error('Onboarding error:', err.message);
+    res.status(500).json({ error: 'Failed to complete onboarding' });
+  }
+});
+
 // Root Endpoint
 app.get('/', (req, res) => {
   res.json({ 
@@ -212,7 +279,8 @@ app.get('/', (req, res) => {
       health: 'GET /health',
       signup: 'POST /api/auth/signup',
       login: 'POST /api/auth/login',
-      me: 'GET /api/auth/me'
+      me: 'GET /api/auth/me',
+      onboarding: 'POST /api/auth/onboarding'
     }
   });
 });

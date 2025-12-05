@@ -139,6 +139,34 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const completeOnboarding = async (experienceData) => {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/onboarding`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(experienceData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to complete onboarding');
+      }
+
+      // Update user state with onboarding data
+      setUser(data.user);
+      return data;
+    } catch (error) {
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        throw new Error('Network error. Please check your connection');
+      }
+      throw error;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('auth_token');
     setToken(null);
@@ -147,7 +175,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, login, signup, logout, completeOnboarding, loading }}>
       {children}
     </AuthContext.Provider>
   );
