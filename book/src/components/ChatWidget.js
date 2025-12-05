@@ -75,9 +75,10 @@ export default function ChatWidget() {
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
     } catch (error) {
+      console.error('Chat Error:', error);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: 'Sorry, I encountered an error. Please make sure the backend is running.' 
+        content: `Error: ${error.message}. Please check the backend logs.` 
       }]);
     } finally {
       setIsLoading(false);
