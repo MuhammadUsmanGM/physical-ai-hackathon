@@ -18,11 +18,15 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
-  }
+  },
+  connectionTimeoutMillis: 5000, // Fail after 5 seconds if cannot connect
+  idleTimeoutMillis: 30000,
+  allowExitOnIdle: true, // Allow Node to exit if pool is idle (good for Vercel)
 });
 
 // Ensure Users Table Exists
 const ensureTableExists = async () => {
+  console.log('Checking database connection and table...');
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
@@ -40,6 +44,7 @@ const ensureTableExists = async () => {
   }
 };
 
+// Don't await this at top level, but log it.
 ensureTableExists();
 
 // CORS Middleware
