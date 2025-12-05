@@ -149,44 +149,7 @@ export default function Onboarding() {
     }
   };
 
-  // Redirect if user is not logged in or already completed onboarding
-  React.useEffect(() => {
-    if (authLoading) return; // Wait for auth to load
-
-    if (!user) {
-      // Not logged in, redirect to auth page
-      history.push(useBaseUrl('/auth'));
-      return;
-    }
-
-    if (user.onboarding_completed) {
-      // Already completed onboarding, redirect to home
-      history.push(useBaseUrl('/'));
-      return;
-    }
-  }, [user, authLoading, history]);
-
-  // Show loading while auth is loading
-  if (authLoading) {
-    return (
-      <Layout title="Loading..." description="Loading">
-        <div className={styles.onboardingContainer}>
-          <div className={styles.onboardingCard}>
-            <div className={styles.header}>
-              <h1>Loading... ⏳</h1>
-              <p>Please wait while we prepare your onboarding experience</p>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Don't render if user is not logged in or already completed
-  if (!user || user.onboarding_completed) {
-    return null;
-  }
-
+  // ALL RENDER FUNCTIONS MUST BE BEFORE CONDITIONAL RETURNS
   const renderProgressBar = () => (
     <div className={styles.progressBar}>
       {[1, 2, 3].map(step => (
@@ -312,6 +275,44 @@ export default function Onboarding() {
       </div>
     </div>
   );
+
+  // Redirect if user is not logged in or already completed onboarding
+  React.useEffect(() => {
+    if (authLoading) return; // Wait for auth to load
+
+    if (!user) {
+      // Not logged in, redirect to auth page
+      history.push(useBaseUrl('/auth'));
+      return;
+    }
+
+    if (user.onboarding_completed) {
+      // Already completed onboarding, redirect to home
+      history.push(useBaseUrl('/'));
+      return;
+    }
+  }, [user, authLoading, history]);
+
+  // Show loading while auth is loading
+  if (authLoading) {
+    return (
+      <Layout title="Loading..." description="Loading">
+        <div className={styles.onboardingContainer}>
+          <div className={styles.onboardingCard}>
+            <div className={styles.header}>
+              <h1>Loading... ⏳</h1>
+              <p>Please wait while we prepare your onboarding experience</p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Don't render if user is not logged in or already completed
+  if (!user || user.onboarding_completed) {
+    return null;
+  }
 
   return (
     <Layout title="Welcome Onboarding" description="Complete your profile">

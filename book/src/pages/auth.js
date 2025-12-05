@@ -112,7 +112,8 @@ export default function Auth() {
           password,
           name: name.trim()
         });
-        history.push(useBaseUrl('/onboarding'));
+        // Use window.location for full page reload to ensure onboarding loads properly
+        window.location.href = useBaseUrl('/onboarding');
       }
     } catch (err) {
       // Improved error messages
