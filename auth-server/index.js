@@ -23,7 +23,7 @@ const auth = betterAuth({
   emailAndPassword: {
     enabled: true
   },
-  trustedOrigins: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000'],
+  trustedOrigins: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://localhost:5173', 'https://physical-ai-hackathon.vercel.app'],
   // Auto-migrate database schema
   databaseHooks: {
     onInit: async (ctx) => {
@@ -32,9 +32,15 @@ const auth = betterAuth({
   }
 });
 
+// Debug Middleware
+app.use((req, res, next) => {
+  console.log(`[Request] ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  next();
+});
+
 // CORS Middleware - MUST come before routes
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://localhost:5173', 'https://physical-ai-hackathon.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
