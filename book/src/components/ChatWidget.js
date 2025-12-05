@@ -11,6 +11,7 @@ export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [showLabel, setShowLabel] = useState(true);
   const BotIcon = useBaseUrl('/img/bot.png');
+  const authUrl = useBaseUrl('/auth');
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -160,8 +161,7 @@ export default function ChatWidget() {
               className={styles.loginButton}
               onClick={() => {
                 setIsOpen(false);
-                // history.push('/auth');
-                window.location.href = '/physical-ai-hackathon/auth'; // Force correct path for GitHub Pages
+                history.push(authUrl);
               }}
             >
               Login / Sign Up
