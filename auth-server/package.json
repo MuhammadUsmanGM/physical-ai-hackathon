@@ -2,6 +2,7 @@
   "name": "auth-server",
   "version": "1.0.0",
   "description": "Better Auth Server for Physical AI Textbook",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
