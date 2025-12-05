@@ -41,12 +41,24 @@ const ensureTableExists = async () => {
     // 1. Create table if it doesn't exist
     await pool.query(createTableQuery);
     
-    // 2. Ensure 'password' column exists (Fix for "column password does not exist")
+    // 2. Ensure 'password' column exists
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR(255);`);
     
-    // 3. Ensure other columns exist just in case
+    // 3. Ensure other columns exist
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(255);`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(255);`);
+
+    // 4. Fix "password_hash" not-null constraint (Legacy column support)
+    const legacyColumns = ['password_hash', 'emailVerified', 'image', 'updatedAt'];
+    
+    for (const col of legacyColumns) {
+      try {
+        await pool.query(`ALTER TABLE users ALTER COLUMN "${col}" DROP NOT NULL;`);
+        console.log(`Fixed constraint for ${col}`);
+      } catch (e) {
+        // Ignore error if column doesn't exist
+      }
+    }
     
     console.log('Users table checked/migrated successfully');
   } catch (err) {
