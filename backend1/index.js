@@ -40,21 +40,21 @@ app.use(cors({
 
 app.use(express.json());
 
+// Debug Middleware: Log all requests
+app.use((req, res, next) => {
+  console.log(`[Request] ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  next();
+});
+
 // Initialize Clients
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
 const qdrant = new QdrantClient({
   url: process.env.QDRANT_URL,
   apiKey: process.env.QDRANT_API_KEY,
 });
 
-const COLLECTION_NAME = 'physical_ai_docs_local'; // Make sure this matches your Qdrant collection
-
-// Helper to get embeddings   
-async function getEmbedding(text) {
-  const model = genAI.getGenerativeModel({ model: "embedding-001" });
-  const result = await model.embedContent(text);
-  return result.embedding.values;
-}
+const COLLECTION_NAME = 'physical_ai_docs_local';
 
 // Chat Endpoint
 app.post('/chat', async (req, res) => {
@@ -67,12 +67,15 @@ app.post('/chat', async (req, res) => {
 
     console.log(`[Chat] Received query: ${query}`);
 
-    // 1. Generate Embedding for the query
-    const queryEmbedding = await getEmbedding(query);
-
-    // 2. Search Qdrant for relevant context
+    // 1. Try to get Context (RAG)
     let retrievedContext = "";
     try {
+      // Use newer embedding model
+      const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
+      const embeddingResult = await embeddingModel.embedContent(query);
+      const queryEmbedding = embeddingResult.embedding.values;
+
+      // Search Qdrant
       const searchResult = await qdrant.search(COLLECTION_NAME, {
         vector: queryEmbedding,
         limit: 3,
@@ -84,13 +87,12 @@ app.post('/chat', async (req, res) => {
         .join("\n\n");
         
       console.log(`[Qdrant] Found ${searchResult.length} relevant chunks`);
-    } catch (dbError) {
-      console.error('[Qdrant] Search failed:', dbError.message);
-      // Continue without context if DB fails (graceful degradation)
+    } catch (ragError) {
+      console.warn('[RAG] Retrieval failed (likely quota or DB issue). Proceeding without context.', ragError.message);
+      // Fallback: Continue without context
     }
 
-    // 3. Construct Prompt
-    // Combine user-selected context (if any) with retrieved context
+    // 2. Construct Prompt
     const combinedContext = `
     ${userContext ? `USER SELECTED CONTEXT:\n${userContext}\n` : ''}
     ${retrievedContext ? `RETRIEVED KNOWLEDGE:\n${retrievedContext}\n` : ''}
@@ -98,9 +100,12 @@ app.post('/chat', async (req, res) => {
 
     const prompt = `
     You are an expert AI teaching assistant for a "Physical AI & Humanoid Robotics" course.
-    Use the following context to answer the student's question. 
-    If the answer is not in the context, use your general knowledge but mention that it's outside the course material.
-    Be concise, encouraging, and accurate.
+    
+    INSTRUCTIONS:
+    1. If the user input is a greeting (e.g., "hi", "hello") or a general question, answer naturally and politely using your general knowledge.
+    2. If the user asks a course-related question, use the provided CONTEXT to answer.
+    3. If the answer is not in the context, you may use your general knowledge but mention that it is outside the specific course material.
+    4. Be concise, encouraging, and accurate.
 
     CONTEXT:
     ${combinedContext}
