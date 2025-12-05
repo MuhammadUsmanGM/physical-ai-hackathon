@@ -1,5 +1,5 @@
 .authContainer {
-  min_height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -184,4 +184,34 @@
   font-size: 14px;
   text-align: center;
   border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.inputError {
+  border-color: rgb(239, 68, 68) !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+.fieldError {
+  color: rgb(239, 68, 68);
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.passwordRequirements {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.passwordRequirements small {
+  font-size: 12px;
+  transition: color 0.2s ease;
+}
+
+.formGroup input:disabled,
+.formGroup select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

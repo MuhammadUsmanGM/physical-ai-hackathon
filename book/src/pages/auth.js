@@ -18,10 +18,17 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
 
   // Password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(''); // 'weak', 'moderate', 'strong'
+
+  // Email validation
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   // Password strength checker function
   const checkPasswordStrength = (password) => {
@@ -39,10 +46,39 @@ export default function Auth() {
     return 'weak';
   };
 
+  // Validate form inputs
+  const validateForm = () => {
+    const errors = {};
+    
+    // Trim inputs
+    const trimmedEmail = email.trim();
+    const trimmedName = name.trim();
+    
+    if (!isLogin && trimmedName.length < 2) {
+      errors.name = 'Name must be at least 2 characters';
+    }
+    
+    if (!validateEmail(trimmedEmail)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters';
+    }
+    
+    if (!isLogin && passwordStrength === 'weak') {
+      errors.password = 'Password is too weak. Add uppercase, numbers, and special characters';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   // Handle password change for strength indicator
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
+    setValidationErrors(prev => ({ ...prev, password: '' }));
 
     // Update password strength when on signup page
     if (!isLogin) {
@@ -56,26 +92,43 @@ export default function Auth() {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
+    setValidationErrors({});
+    
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
 
     try {
       if (isLogin) {
-        await login(email, password);
-        // Use useBaseUrl to get the correct path for the landing page (handles GitHub Pages subpaths)
+        await login(email.trim(), password);
         history.push(useBaseUrl('/'));
       } else {
+        // CRITICAL FIX: Redirect to home after signup instead of switching to login
         await signup({
-          email,
+          email: email.trim(),
           password,
-          name
+          name: name.trim()
         });
-        // Instead of redirecting, show success and switch to login
-        setSuccessMsg('Signup successful! Please login with your new account.');
-        setIsLogin(true);
-        setPassword(''); // Clear password for security
+        history.push(useBaseUrl('/'));
       }
     } catch (err) {
-      setError(err.message);
+      // Improved error messages
+      const errorMessage = err.message || 'An error occurred';
+      
+      if (errorMessage.includes('Network') || errorMessage.includes('fetch')) {
+        setError('Network error. Please check your internet connection and try again.');
+      } else if (errorMessage.includes('already exists') || errorMessage.includes('duplicate')) {
+        setError('This email is already registered. Please login or use a different email.');
+      } else if (errorMessage.includes('Invalid') || errorMessage.includes('incorrect')) {
+        setError('Invalid email or password. Please try again.');
+      } else if (errorMessage.includes('500') || errorMessage.includes('server')) {
+        setError('Server error. Please try again later.');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -100,7 +153,6 @@ export default function Auth() {
           </div>
 
           {error && <div className={styles.error}>{error}</div>}
-          {successMsg && <div className="alert alert--success margin-bottom--md">{successMsg}</div>}
 
           <form onSubmit={handleSubmit} className={styles.authForm}>
             {!isLogin && (
@@ -109,10 +161,16 @@ export default function Auth() {
                 <input
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setValidationErrors(prev => ({ ...prev, name: '' }));
+                  }}
                   required
+                  disabled={loading}
                   placeholder="John Doe"
+                  className={validationErrors.name ? styles.inputError : ''}
                 />
+                {validationErrors.name && <span className={styles.fieldError}>{validationErrors.name}</span>}
               </div>
             )}
 
@@ -121,10 +179,16 @@ export default function Auth() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setValidationErrors(prev => ({ ...prev, email: '' }));
+                }}
                 required
+                disabled={loading}
                 placeholder="john@example.com"
+                className={validationErrors.email ? styles.inputError : ''}
               />
+              {validationErrors.email && <span className={styles.fieldError}>{validationErrors.email}</span>}
             </div>
 
             <div className={styles.formGroup}>
@@ -135,16 +199,18 @@ export default function Auth() {
                   value={password}
                   onChange={handlePasswordChange}
                   required
+                  disabled={loading}
                   placeholder="••••••••"
+                  className={validationErrors.password ? styles.inputError : ''}
                 />
                 <button
                   type="button"
                   className={styles.eyeButton}
                   style={{ color: isLogin ? '#9CA3AF' : getIconColor() }}
                   onClick={() => setShowPassword(!showPassword)}
+                  disabled={loading}
                 >
                   {showPassword ? (
-                    // Eye icon (closed)
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
@@ -152,7 +218,6 @@ export default function Auth() {
                       <path d="M10 12h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   ) : (
-                    // Eye icon (open)
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
@@ -160,6 +225,23 @@ export default function Auth() {
                   )}
                 </button>
               </div>
+              {validationErrors.password && <span className={styles.fieldError}>{validationErrors.password}</span>}
+              {!isLogin && password.length > 0 && (
+                <div className={styles.passwordRequirements}>
+                  <small style={{ color: password.length >= 8 ? '#10B981' : '#9CA3AF' }}>
+                    ✓ At least 8 characters
+                  </small>
+                  <small style={{ color: /[A-Z]/.test(password) ? '#10B981' : '#9CA3AF' }}>
+                    ✓ One uppercase letter
+                  </small>
+                  <small style={{ color: /[0-9]/.test(password) ? '#10B981' : '#9CA3AF' }}>
+                    ✓ One number
+                  </small>
+                  <small style={{ color: /[^A-Za-z0-9]/.test(password) ? '#10B981' : '#9CA3AF' }}>
+                    ✓ One special character
+                  </small>
+                </div>
+              )}
             </div>
 
             <button type="submit" className={styles.submitButton} disabled={loading}>
