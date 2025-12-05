@@ -1,71 +1,109 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authClient } from '../lib/auth-client';
 
 const AuthContext = createContext(null);
+
+// const API_URL = 'http://localhost:4000'; // Local
+const API_URL = 'https://physical-ai-hackathon.vercel.app'; // Production
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState(null);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    // Check session on mount
-    const checkSession = async () => {
-      try {
-        const { data } = await authClient.getSession();
-        if (data) {
-          setUser(data.user);
-          setSession(data.session);
-        }
-      } catch (error) {
-        console.error('Session check failed', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    checkSession();
+    // Check for token in local storage on mount
+    const storedToken = localStorage.getItem('auth_token');
+    if (storedToken) {
+      setToken(storedToken);
+      checkSession(storedToken);
+    } else {
+      setLoading(false);
+    }
   }, []);
 
+  const checkSession = async (authToken) => {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      } else {
+        // Token invalid
+        logout();
+      }
+    } catch (error) {
+      console.error('Session check failed', error);
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const login = async (email, password) => {
-    const { data, error } = await authClient.signIn.email({
-      email,
-      password,
-    });
-    
-    if (error) throw new Error(error.message);
-    
-    if (data) {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      // Success
+      localStorage.setItem('auth_token', data.token);
+      setToken(data.token);
       setUser(data.user);
-      setSession(data.session);
       return data;
+    } catch (error) {
+      throw error;
     }
   };
 
   const signup = async (userData) => {
-    const { data, error } = await authClient.signUp.email({
-      email: userData.email,
-      password: userData.password,
-      name: userData.name,
-    });
+    try {
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: userData.name,
+          email: userData.email,
+          password: userData.password
+        }),
+      });
 
-    if (error) throw new Error(error.message);
+      const data = await response.json();
 
-    if (data) {
+      if (!response.ok) {
+        throw new Error(data.error || 'Signup failed');
+      }
+
+      // Success
+      localStorage.setItem('auth_token', data.token);
+      setToken(data.token);
       setUser(data.user);
-      setSession(data.session);
       return data;
+    } catch (error) {
+      throw error;
     }
   };
 
-  const logout = async () => {
-    await authClient.signOut();
+  const logout = () => {
+    localStorage.removeItem('auth_token');
+    setToken(null);
     setUser(null);
-    setSession(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { betterAuth } from 'better-auth';
 import pg from 'pg';
 import dotenv from 'dotenv';
-import { toNodeHandler } from 'better-auth/node';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 const { Pool } = pg;
@@ -11,7 +11,7 @@ const { Pool } = pg;
 const app = express();
 const port = 4000;
 
-app.enable('trust proxy'); // Required for Vercel/proxies
+app.enable('trust proxy');
 
 // Database connection
 const pool = new Pool({
@@ -21,30 +21,28 @@ const pool = new Pool({
   }
 });
 
-// Initialize Better Auth with proper origin configuration for development
-const auth = betterAuth({
-  database: pool,
-  secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:4000',
-  emailAndPassword: {
-    enabled: true
-  },
-  trustedOrigins: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://localhost:5173', 'https://physical-ai-hackathon.vercel.app', 'https://muhammadusmangm.github.io'],
-  // Auto-migrate database schema
-  databaseHooks: {
-    onInit: async (ctx) => {
-      console.log('Better Auth initialized, checking schema...');
-    }
+// Ensure Users Table Exists
+const ensureTableExists = async () => {
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+  try {
+    await pool.query(createTableQuery);
+    console.log('Users table checked/created successfully');
+  } catch (err) {
+    console.error('Error creating users table:', err);
   }
-});
+};
 
-// Debug Middleware
-app.use((req, res, next) => {
-  console.log(`[Request] ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
-  next();
-});
+ensureTableExists();
 
-// CORS Middleware - MUST come before routes
+// CORS Middleware
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://localhost:5173', 'https://physical-ai-hackathon.vercel.app', 'https://muhammadusmangm.github.io'],
   credentials: true,
@@ -52,22 +50,135 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Middleware
 app.use(express.json());
 
-// Mount Better Auth API
-app.all('/api/auth/*', (req, res) => {
-  toNodeHandler(auth)(req, res);
+// Debug Middleware
+app.use((req, res, next) => {
+  console.log(`[Request] ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  next();
+});
+
+// --- Auth Endpoints ---
+
+// SIGNUP
+app.post('/api/auth/signup', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Missing fields' });
+    }
+
+    // Check if user exists
+    const userCheck = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Insert user
+    const newUser = await pool.query(
+      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, created_at',
+      [name, email, hashedPassword]
+    );
+
+    const user = newUser.rows[0];
+
+    // Generate Token
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.BETTER_AUTH_SECRET || 'fallback_secret', // Reusing the existing secret var
+      { expiresIn: '7d' }
+    );
+
+    res.json({ user, token });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error during signup' });
+  }
+});
+
+// LOGIN
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Missing credentials' });
+    }
+
+    // Find user
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
+    const user = result.rows[0];
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
+    // Generate Token
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.BETTER_AUTH_SECRET || 'fallback_secret',
+      { expiresIn: '7d' }
+    );
+
+    // Remove password from response
+    delete user.password;
+
+    res.json({ user, token });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error during login' });
+  }
+});
+
+// GET CURRENT USER (Session Check)
+app.get('/api/auth/me', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    const decoded = jwt.verify(token, process.env.BETTER_AUTH_SECRET || 'fallback_secret');
+    
+    const result = await pool.query('SELECT id, name, email, created_at FROM users WHERE id = $1', [decoded.id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user: result.rows[0] });
+
+  } catch (err) {
+    console.error('Auth check failed:', err.message);
+    res.status(401).json({ error: 'Invalid token' });
+  }
 });
 
 // Root Endpoint
 app.get('/', (req, res) => {
   res.json({ 
     status: 'ok', 
-    message: 'Auth Server is running',
+    message: 'Auth Server is running (Custom Auth)',
     endpoints: {
       health: 'GET /health',
-      auth: 'POST /api/auth/*'
+      signup: 'POST /api/auth/signup',
+      login: 'POST /api/auth/login',
+      me: 'GET /api/auth/me'
     }
   });
 });
