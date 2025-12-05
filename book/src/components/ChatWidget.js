@@ -57,8 +57,8 @@ export default function ChatWidget() {
       }
       
       // const response = await fetch('https://physical-ai-hackathon-production.up.railway.app/chat', {
-      const response = await fetch('http://localhost:8000/chat', { // Local Backend1
-      // const response = await fetch('https://your-backend1-url.vercel.app/chat', { // Production Backend1
+      // const response = await fetch('http://localhost:8000/chat', { // Local Backend1
+      const response = await fetch('https://physical-ai-hackathon-x6me.vercel.app/chat', { // Production Backend1
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

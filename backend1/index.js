@@ -126,12 +126,28 @@ app.post('/chat', async (req, res) => {
   }
 });
 
+// Root Endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Physical AI Chatbot Backend is running',
+    endpoints: {
+      chat: 'POST /chat',
+      health: 'GET /health'
+    }
+  });
+});
+
 // Health Check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'chatbot-backend' });
 });
 
-app.listen(port, () => {
-  console.log(`Chatbot Backend running on port ${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Chatbot Backend running on port ${port}`);
+  });
+}
+
+module.exports = app;
 
