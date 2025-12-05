@@ -47,9 +47,9 @@ const qdrant = new QdrantClient({
   apiKey: process.env.QDRANT_API_KEY,
 });
 
-const COLLECTION_NAME = 'physical_ai_textbook'; // Make sure this matches your Qdrant collection
+const COLLECTION_NAME = 'physical_ai_docs_local'; // Make sure this matches your Qdrant collection
 
-// Helper to get embeddings
+// Helper to get embeddings   
 async function getEmbedding(text) {
   const model = genAI.getGenerativeModel({ model: "embedding-001" });
   const result = await model.embedContent(text);
@@ -177,6 +177,10 @@ app.get('/api/test-qdrant', async (req, res) => {
 if (require.main === module) {
   app.listen(port, () => {
     console.log(`Chatbot Backend running on port ${port}`);
+    console.log('Environment Check:');
+    console.log(`- GOOGLE_API_KEY: ${process.env.GOOGLE_API_KEY ? 'Set' : 'MISSING'}`);
+    console.log(`- QDRANT_URL: ${process.env.QDRANT_URL ? 'Set' : 'MISSING'}`);
+    console.log(`- QDRANT_API_KEY: ${process.env.QDRANT_API_KEY ? 'Set' : 'MISSING'}`);
   });
 }
 
