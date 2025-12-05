@@ -61,7 +61,8 @@ export default function Auth() {
     try {
       if (isLogin) {
         await login(email, password);
-        history.push('/');
+        // Use useBaseUrl to get the correct path for the landing page (handles GitHub Pages subpaths)
+        history.push(useBaseUrl('/'));
       } else {
         await signup({
           email,
