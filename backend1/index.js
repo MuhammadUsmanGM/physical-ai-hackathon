@@ -111,9 +111,22 @@ app.post('/chat', async (req, res) => {
 
     // 4. Generate Response
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const result = await model.generateContent(prompt);
+    
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      safetySettings: [
+        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
+      ]
+    });
     const response = await result.response;
     const text = response.text();
+
+    if (!text) {
+      throw new Error('Empty response from AI model');
+    }
 
     res.json({ response: text });
 
@@ -141,6 +154,24 @@ app.get('/', (req, res) => {
 // Health Check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'chatbot-backend' });
+});
+
+// Qdrant Connection Test
+app.get('/api/test-qdrant', async (req, res) => {
+  try {
+    const collections = await qdrant.getCollections();
+    res.json({ 
+      status: 'ok', 
+      message: 'Qdrant connection successful', 
+      collections: collections.collections.map(c => c.name)
+    });
+  } catch (err) {
+    console.error('Qdrant Test Failed:', err);
+    res.status(500).json({ 
+      error: 'Qdrant connection failed', 
+      details: err.message 
+    });
+  }
 });
 
 if (require.main === module) {

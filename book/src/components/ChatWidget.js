@@ -68,6 +68,11 @@ export default function ChatWidget() {
       });
 
       const data = await response.json();
+      
+      if (!data.response) {
+        throw new Error('No response from AI');
+      }
+
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
     } catch (error) {
       setMessages(prev => [...prev, { 
