@@ -64,44 +64,7 @@ export default function Onboarding() {
   const [hardwareExperience, setHardwareExperience] = useState({});
   const [experienceLevel, setExperienceLevel] = useState('');
 
-  // Redirect if user is not logged in or already completed onboarding
-  React.useEffect(() => {
-    if (authLoading) return; // Wait for auth to load
-
-    if (!user) {
-      // Not logged in, redirect to auth page
-      history.push(useBaseUrl('/auth'));
-      return;
-    }
-
-    if (user.onboarding_completed) {
-      // Already completed onboarding, redirect to home
-      history.push(useBaseUrl('/'));
-      return;
-    }
-  }, [user, authLoading, history]);
-
-  // Show loading while auth is loading
-  if (authLoading) {
-    return (
-      <Layout title="Loading..." description="Loading">
-        <div className={styles.onboardingContainer}>
-          <div className={styles.onboardingCard}>
-            <div className={styles.header}>
-              <h1>Loading... ⏳</h1>
-              <p>Please wait while we prepare your onboarding experience</p>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Don't render if user is not logged in or already completed
-  if (!user || user.onboarding_completed) {
-    return null;
-  }
-
+  // All event handlers MUST be defined before any conditional returns
   const handleSoftwareToggle = (techId) => {
     setSoftwareExperience(prev => {
       const newExp = { ...prev };
@@ -185,6 +148,44 @@ export default function Onboarding() {
       setLoading(false);
     }
   };
+
+  // Redirect if user is not logged in or already completed onboarding
+  React.useEffect(() => {
+    if (authLoading) return; // Wait for auth to load
+
+    if (!user) {
+      // Not logged in, redirect to auth page
+      history.push(useBaseUrl('/auth'));
+      return;
+    }
+
+    if (user.onboarding_completed) {
+      // Already completed onboarding, redirect to home
+      history.push(useBaseUrl('/'));
+      return;
+    }
+  }, [user, authLoading, history]);
+
+  // Show loading while auth is loading
+  if (authLoading) {
+    return (
+      <Layout title="Loading..." description="Loading">
+        <div className={styles.onboardingContainer}>
+          <div className={styles.onboardingCard}>
+            <div className={styles.header}>
+              <h1>Loading... ⏳</h1>
+              <p>Please wait while we prepare your onboarding experience</p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Don't render if user is not logged in or already completed
+  if (!user || user.onboarding_completed) {
+    return null;
+  }
 
   const renderProgressBar = () => (
     <div className={styles.progressBar}>
