@@ -75,6 +75,10 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'auth-server' });
 });
 
-app.listen(port, () => {
-  console.log(`Auth Server running at http://localhost:${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Auth Server running at http://localhost:${port}`);
+  });
+}
+
+module.exports = app;
