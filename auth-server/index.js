@@ -60,6 +60,18 @@ app.all('/api/auth/*', (req, res) => {
   toNodeHandler(auth)(req, res);
 });
 
+// Root Endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Auth Server is running',
+    endpoints: {
+      health: 'GET /health',
+      auth: 'POST /api/auth/*'
+    }
+  });
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'auth-server' });
