@@ -99,7 +99,7 @@ export default function ChatWidget() {
   };
 
   // If loading auth state, don't show anything yet
-  if (loading) return null;
+  // if (loading) return null;
 
   return (
     <>
