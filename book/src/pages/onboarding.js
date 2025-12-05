@@ -53,7 +53,7 @@ const EXPERIENCE_LEVELS = [
 ];
 
 export default function Onboarding() {
-  const { completeOnboarding, user } = useAuth();
+  const { completeOnboarding, user, loading: authLoading } = useAuth();
   const history = useHistory();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -63,6 +63,44 @@ export default function Onboarding() {
   const [softwareExperience, setSoftwareExperience] = useState({});
   const [hardwareExperience, setHardwareExperience] = useState({});
   const [experienceLevel, setExperienceLevel] = useState('');
+
+  // Redirect if user is not logged in or already completed onboarding
+  React.useEffect(() => {
+    if (authLoading) return; // Wait for auth to load
+
+    if (!user) {
+      // Not logged in, redirect to auth page
+      history.push(useBaseUrl('/auth'));
+      return;
+    }
+
+    if (user.onboarding_completed) {
+      // Already completed onboarding, redirect to home
+      history.push(useBaseUrl('/'));
+      return;
+    }
+  }, [user, authLoading, history]);
+
+  // Show loading while auth is loading
+  if (authLoading) {
+    return (
+      <Layout title="Loading..." description="Loading">
+        <div className={styles.onboardingContainer}>
+          <div className={styles.onboardingCard}>
+            <div className={styles.header}>
+              <h1>Loading... ⏳</h1>
+              <p>Please wait while we prepare your onboarding experience</p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Don't render if user is not logged in or already completed
+  if (!user || user.onboarding_completed) {
+    return null;
+  }
 
   const handleSoftwareToggle = (techId) => {
     setSoftwareExperience(prev => {
