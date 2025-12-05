@@ -29,7 +29,7 @@ const auth = betterAuth({
   emailAndPassword: {
     enabled: true
   },
-  trustedOrigins: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://localhost:5173', 'https://physical-ai-hackathon.vercel.app'],
+  trustedOrigins: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://localhost:5173', 'https://physical-ai-hackathon.vercel.app', 'https://muhammadusmangm.github.io'],
   // Auto-migrate database schema
   databaseHooks: {
     onInit: async (ctx) => {
@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 
 // CORS Middleware - MUST come before routes
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://localhost:5173', 'https://physical-ai-hackathon.vercel.app'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://localhost:5173', 'https://physical-ai-hackathon.vercel.app', 'https://muhammadusmangm.github.io'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
