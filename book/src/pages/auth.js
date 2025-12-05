@@ -4,12 +4,15 @@ import { useAuth } from '../contexts/AuthContext';
 import { useHistory } from '@docusaurus/router';
 import styles from './auth.module.css';
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const { login, signup } = useAuth();
   const history = useHistory();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const logoUrl = useBaseUrl('/img/logo.png');
 
   // Form states
   const [email, setEmail] = useState('');
@@ -84,7 +87,7 @@ export default function Auth() {
       <div className={styles.authContainer}>
         <div className={styles.authCard}>
           <div className={styles.authHeader}>
-            <img src="/img/logo.png" alt="Logo" className={styles.logo} />
+            <img src={logoUrl} alt="Logo" className={styles.logo} />
             <h2>{isLogin ? 'Welcome Back' : 'Start Your Journey'}</h2>
             <p>{isLogin ? 'Login to continue learning' : 'Create an account to personalize your experience'}</p>
           </div>

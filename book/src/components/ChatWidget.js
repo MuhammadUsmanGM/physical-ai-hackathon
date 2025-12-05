@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import BotIcon from '../../static/img/bot.png';
 import styles from './ChatWidget.module.css';
 import { useAuth } from '../contexts/AuthContext';
 import { useHistory } from '@docusaurus/router';
@@ -11,6 +10,7 @@ export default function ChatWidget() {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
   const [showLabel, setShowLabel] = useState(true);
+  const BotIcon = useBaseUrl('/img/bot.png');
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
