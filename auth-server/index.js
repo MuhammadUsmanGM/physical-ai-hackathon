@@ -24,7 +24,7 @@ const pool = new Pool({
   allowExitOnIdle: true, // Allow Node to exit if pool is idle (good for Vercel)
 });
 
-// Ensure Users Table Exists
+// Ensure Users Table Exists & Has Correct Columns
 const ensureTableExists = async () => {
   console.log('Checking database connection and table...');
   const createTableQuery = `
@@ -36,11 +36,21 @@ const ensureTableExists = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
+  
   try {
+    // 1. Create table if it doesn't exist
     await pool.query(createTableQuery);
-    console.log('Users table checked/created successfully');
+    
+    // 2. Ensure 'password' column exists (Fix for "column password does not exist")
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR(255);`);
+    
+    // 3. Ensure other columns exist just in case
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(255);`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(255);`);
+    
+    console.log('Users table checked/migrated successfully');
   } catch (err) {
-    console.error('Error creating users table:', err);
+    console.error('Error migrating users table:', err);
   }
 };
 
