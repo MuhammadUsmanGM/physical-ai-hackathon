@@ -200,6 +200,25 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'auth-server' });
 });
 
+// DB Connection Test Endpoint
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW()');
+    res.json({ 
+      status: 'ok', 
+      message: 'Database connection successful', 
+      time: result.rows[0].now 
+    });
+  } catch (err) {
+    console.error('DB Test Failed:', err);
+    res.status(500).json({ 
+      error: 'Database connection failed', 
+      details: err.message,
+      code: err.code
+    });
+  }
+});
+
 // Start server if not running on Vercel (local development)
 if (!process.env.VERCEL) {
   app.listen(port, () => {

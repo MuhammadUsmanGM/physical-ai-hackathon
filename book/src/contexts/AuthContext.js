@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
+        throw new Error(data.details || data.error || 'Login failed');
       }
 
       // Success
@@ -83,7 +83,8 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Signup failed');
+        // Use the detailed error from the backend if available
+        throw new Error(data.details || data.error || 'Signup failed');
       }
 
       // Success
