@@ -171,7 +171,9 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('auth_token');
     setToken(null);
     setUser(null);
-    history.push('/logout');
+    // Use window.location to ensure proper redirect to the logout page
+    // This will handle GitHub Pages subdirectory properly
+    window.location.href = '/physical-ai-hackathon/logout';
   };
 
   return (

@@ -59,10 +59,20 @@ export default function Onboarding() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Ref to track if component is mounted to prevent state updates on unmounted components
+  const isMountedRef = React.useRef(true);
+
   // Form state
   const [softwareExperience, setSoftwareExperience] = useState({});
   const [hardwareExperience, setHardwareExperience] = useState({});
   const [experienceLevel, setExperienceLevel] = useState('');
+
+  // Cleanup function to set mounted ref to false on unmount
+  React.useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // All event handlers MUST be defined before any conditional returns
   const handleSoftwareToggle = (techId) => {
@@ -140,12 +150,21 @@ export default function Onboarding() {
         areas_of_interest: []
       });
 
-      // Redirect to home page
-      history.push(useBaseUrl('/'));
+      // Only redirect if component is still mounted
+      if (isMountedRef.current) {
+        // Redirect to home page
+        history.push(useBaseUrl('/'));
+      }
     } catch (err) {
-      setError(err.message || 'Failed to complete onboarding');
+      // Only set error if component is still mounted
+      if (isMountedRef.current) {
+        setError(err.message || 'Failed to complete onboarding');
+      }
     } finally {
-      setLoading(false);
+      // Only update loading state if component is still mounted
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -310,8 +329,13 @@ export default function Onboarding() {
   }
 
   // Don't render if user is not logged in or already completed
-  if (!user || user.onboarding_completed) {
-    return null;
+  if (!user) {
+    return null; // Don't render anything if user is not loaded yet
+  }
+
+  // If onboarding is already completed, redirect and return null
+  if (user.onboarding_completed) {
+    return null; // Let the useEffect handle the redirect
   }
 
   return (
