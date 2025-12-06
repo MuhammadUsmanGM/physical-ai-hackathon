@@ -122,8 +122,8 @@ export default function Auth() {
         await login(email.trim(), password);
         // Mark component as unmounted to prevent any further state updates
         isMountedRef.current = false;
-        // Use window.location for full page navigation
-        window.location.href = useBaseUrl('/');
+        // Use window.location with proper base URL for GitHub Pages
+        window.location.href = window.location.origin + '/physical-ai-hackathon/';
         return; // Stop execution after redirect
       } else {
         // Redirect to home page after signup
@@ -134,8 +134,8 @@ export default function Auth() {
         });
         // Mark component as unmounted to prevent any further state updates
         isMountedRef.current = false;
-        // Use window.location for full page navigation to home page
-        window.location.href = useBaseUrl('/');
+        // Use window.location with proper base URL for GitHub Pages
+        window.location.href = window.location.origin + '/physical-ai-hackathon/';
         return; // Stop execution after redirect
       }
     } catch (err) {
