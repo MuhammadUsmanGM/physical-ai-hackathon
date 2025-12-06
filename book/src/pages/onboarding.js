@@ -311,19 +311,19 @@ export default function Onboarding() {
     );
   }
 
-  // Handle redirects in useEffect to prevent infinite loops
-  // This is the proper React way to handle navigation side effects
+  // Handle redirects in a single useEffect to prevent infinite loops
   React.useEffect(() => {
-    if (authLoading) return; // Don't redirect while loading
+    // Only redirect when auth has finished loading
+    if (authLoading) return;
 
     if (!user) {
-      // Not logged in, redirect to auth page
+      // User is not logged in, redirect to auth page
       history.push(useBaseUrl('/auth'));
     } else if (user.onboarding_completed) {
-      // Already completed onboarding, redirect to home
+      // User has already completed onboarding, redirect to home
       history.push(useBaseUrl('/'));
     }
-  }, [user, authLoading, history]);
+  }, [user, authLoading, history]); // Include history in dependencies
 
   // Show loading while auth is loading
   if (authLoading) {
@@ -341,16 +341,16 @@ export default function Onboarding() {
     );
   }
 
-  // Show a redirecting message while redirect is happening
-  // This prevents the flickering/blank screen issue mentioned
+  // Show a loading state while redirects are happening
+  // This prevents blank screens while navigation executes
   if (!user || (user && user.onboarding_completed)) {
     return (
-      <Layout title="Redirecting..." description="Redirecting">
+      <Layout title="Loading..." description="Loading">
         <div className={styles.onboardingContainer}>
           <div className={styles.onboardingCard}>
             <div className={styles.header}>
-              <h1>Redirecting... ⏳</h1>
-              <p>Please wait</p>
+              <h1>Please wait... ⏳</h1>
+              <p>Redirecting you to the appropriate page</p>
             </div>
           </div>
         </div>
