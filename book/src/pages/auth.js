@@ -14,11 +14,21 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const logoUrl = useBaseUrl('/img/logo.png');
 
+  // Ref to track if component is mounted to prevent state updates on unmounted components
+  const isMountedRef = React.useRef(true);
+
   // Form states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
+
+  // Cleanup function to set mounted ref to false on unmount
+  React.useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
@@ -90,21 +100,28 @@ export default function Auth() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccessMsg('');
-    setValidationErrors({});
-    
+    // Only update state if component is still mounted
+    if (isMountedRef.current) {
+      setError('');
+      setSuccessMsg('');
+      setValidationErrors({});
+    }
+
     // Validate form
     if (!validateForm()) {
       return;
     }
-    
-    setLoading(true);
+
+    // Only update loading state if component is still mounted
+    if (isMountedRef.current) {
+      setLoading(true);
+    }
 
     try {
       if (isLogin) {
         await login(email.trim(), password);
-        history.push(useBaseUrl('/'));
+        // Use window.location for full page navigation
+        window.location.href = useBaseUrl('/');
       } else {
         // Redirect to home page after signup
         await signup({
@@ -112,26 +129,32 @@ export default function Auth() {
           password,
           name: name.trim()
         });
-        // Use window.location for full page reload
+        // Use window.location for full page navigation to home page
         window.location.href = useBaseUrl('/');
       }
     } catch (err) {
-      // Improved error messages
-      const errorMessage = err.message || 'An error occurred';
-      
-      if (errorMessage.includes('Network') || errorMessage.includes('fetch')) {
-        setError('Network error. Please check your internet connection and try again.');
-      } else if (errorMessage.includes('already exists') || errorMessage.includes('duplicate')) {
-        setError('This email is already registered. Please login or use a different email.');
-      } else if (errorMessage.includes('Invalid') || errorMessage.includes('incorrect')) {
-        setError('Invalid email or password. Please try again.');
-      } else if (errorMessage.includes('500') || errorMessage.includes('server')) {
-        setError('Server error. Please try again later.');
-      } else {
-        setError(errorMessage);
+      // Only update error state if component is still mounted
+      if (isMountedRef.current) {
+        // Improved error messages
+        const errorMessage = err.message || 'An error occurred';
+
+        if (errorMessage.includes('Network') || errorMessage.includes('fetch')) {
+          setError('Network error. Please check your internet connection and try again.');
+        } else if (errorMessage.includes('already exists') || errorMessage.includes('duplicate')) {
+          setError('This email is already registered. Please login or use a different email.');
+        } else if (errorMessage.includes('Invalid') || errorMessage.includes('incorrect')) {
+          setError('Invalid email or password. Please try again.');
+        } else if (errorMessage.includes('500') || errorMessage.includes('server')) {
+          setError('Server error. Please try again later.');
+        } else {
+          setError(errorMessage);
+        }
       }
     } finally {
-      setLoading(false);
+      // Only update loading state if component is still mounted
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
