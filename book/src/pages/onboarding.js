@@ -295,20 +295,33 @@ export default function Onboarding() {
     </div>
   );
 
-  // Redirect if user is not logged in or already completed onboarding
+  // Show loading while auth is loading
+  if (authLoading) {
+    return (
+      <Layout title="Loading..." description="Loading">
+        <div className={styles.onboardingContainer}>
+          <div className={styles.onboardingCard}>
+            <div className={styles.header}>
+              <h1>Loading... ⏳</h1>
+              <p>Please wait while we prepare your onboarding experience</p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Handle redirects in useEffect to prevent infinite loops
+  // This is the proper React way to handle navigation side effects
   React.useEffect(() => {
-    if (authLoading) return; // Wait for auth to load
+    if (authLoading) return; // Don't redirect while loading
 
     if (!user) {
       // Not logged in, redirect to auth page
       history.push(useBaseUrl('/auth'));
-      return;
-    }
-
-    if (user.onboarding_completed) {
+    } else if (user.onboarding_completed) {
       // Already completed onboarding, redirect to home
       history.push(useBaseUrl('/'));
-      return;
     }
   }, [user, authLoading, history]);
 
@@ -328,15 +341,21 @@ export default function Onboarding() {
     );
   }
 
-  // Don't render if user is not logged in or already completed
-  if (!user) {
-    return null; // Don't render anything if user is not loaded yet
-  }
-
-  // If onboarding is already completed, don't render anything
-  // The useEffect handles the redirect
-  if (user.onboarding_completed) {
-    return null;
+  // Show a redirecting message while redirect is happening
+  // This prevents the flickering/blank screen issue mentioned
+  if (!user || (user && user.onboarding_completed)) {
+    return (
+      <Layout title="Redirecting..." description="Redirecting">
+        <div className={styles.onboardingContainer}>
+          <div className={styles.onboardingCard}>
+            <div className={styles.header}>
+              <h1>Redirecting... ⏳</h1>
+              <p>Please wait</p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
   return (
