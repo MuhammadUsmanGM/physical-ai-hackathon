@@ -328,14 +328,16 @@ export default function Onboarding() {
     );
   }
 
-  // Don't render if user is not logged in or already completed
+  // Don't render if user is not logged in
   if (!user) {
     return null; // Don't render anything if user is not loaded yet
   }
 
-  // If onboarding is already completed, redirect and return null
+  // If onboarding is already completed, redirect to home
   if (user.onboarding_completed) {
-    return null; // Let the useEffect handle the redirect
+    // Redirect to home page since useEffect won't run after state change
+    history.push(useBaseUrl('/'));
+    return null; // Don't render anything after redirect
   }
 
   return (
