@@ -120,8 +120,11 @@ export default function Auth() {
     try {
       if (isLogin) {
         await login(email.trim(), password);
+        // Mark component as unmounted to prevent any further state updates
+        isMountedRef.current = false;
         // Use window.location for full page navigation
         window.location.href = useBaseUrl('/');
+        return; // Stop execution after redirect
       } else {
         // Redirect to home page after signup
         await signup({
@@ -129,8 +132,11 @@ export default function Auth() {
           password,
           name: name.trim()
         });
+        // Mark component as unmounted to prevent any further state updates
+        isMountedRef.current = false;
         // Use window.location for full page navigation to home page
         window.location.href = useBaseUrl('/');
+        return; // Stop execution after redirect
       }
     } catch (err) {
       // Only update error state if component is still mounted
