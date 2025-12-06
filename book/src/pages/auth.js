@@ -106,14 +106,14 @@ export default function Auth() {
         await login(email.trim(), password);
         history.push(useBaseUrl('/'));
       } else {
-        // Redirect to onboarding after signup to collect user experience
+        // Redirect to home page after signup
         await signup({
           email: email.trim(),
           password,
           name: name.trim()
         });
-        // Use window.location for full page reload to ensure onboarding loads properly
-        window.location.href = useBaseUrl('/onboarding');
+        // Use window.location for full page reload
+        window.location.href = useBaseUrl('/');
       }
     } catch (err) {
       // Improved error messages
