@@ -125,8 +125,9 @@ ${query}
 
     // 3. Generate Response using updated model
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash" // Updated to stable model
+      model: "gemini-2.5-flash-lite" // Updated to stable model
     });
+    
     
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
