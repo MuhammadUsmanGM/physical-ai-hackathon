@@ -14,7 +14,7 @@ load_dotenv()
 # Get API key and base URL from .env file
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 gemini_base_url = os.getenv("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/")
-gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
 
 # Configure external AsyncOpenAI client using Gemini endpoint
 external_client = AsyncOpenAI(
